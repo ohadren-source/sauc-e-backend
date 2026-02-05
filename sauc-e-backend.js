@@ -26,7 +26,7 @@ const API_KEYS = {
   REVENUECAT_BBQE: process.env.REVENUECAT_BBQE || 'sk_YSFYUeoGEPNgMrhANahvlEAzFYCUY',
   REVENUECAT_RELISH: process.env.REVENUECAT_RELISH || 'sk_YSFYUeoGEPNgMrhANahvlEAzFYCUY',
   
-  CLAUDE_API: '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',
+  CLAUDE_API: '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',
   
   RAPIDAPI_KEY: process.env.RAPIDAPI_KEY || 'fe965bb7e9msha1b0b274e7812cdp1856e7jsne86693481c2d',
   RAPIDAPI_HOST: process.env.RAPIDAPI_HOST || 'breachdirectory.p.rapidapi.com'
