@@ -26,7 +26,7 @@ const API_KEYS = {
   REVENUECAT_BBQE: process.env.REVENUECAT_BBQE || 'sk_YSFYUeoGEPNgMrhANahvlEAzFYCUY',
   REVENUECAT_RELISH: process.env.REVENUECAT_RELISH || 'sk_YSFYUeoGEPNgMrhANahvlEAzFYCUY',
   
-  CLAUDE_API: CLAUDE_API: process.env.ANTHROPIC_API_KEY,
+  CLAUDE_API: process.env.ANTHROPIC_API_KEY,
   
   RAPIDAPI_KEY: process.env.RAPIDAPI_KEY || 'fe965bb7e9msha1b0b274e7812cdp1856e7jsne86693481c2d',
   RAPIDAPI_HOST: process.env.RAPIDAPI_HOST || 'breachdirectory.p.rapidapi.com'
@@ -131,55 +131,33 @@ app.post('/api/bbqe/check-threat', async (req, res) => {
 
     // Step 1: Check subscription
     const subscriptionStatus = await checkSubscription(customerId, 'BBQE');
-    
-    if (!subscriptionStatus.isSubscribed && subscriptionStatus.checksUsed >= 5) {
+
+    if (!subscriptionStatus.isSubscribed) {
       return res.status(403).json({
-        error: 'Free limit reached',
+        error: 'Subscription required for threat checks',
         subscriptionRequired: true
       });
     }
 
-    // Step 2: Check RapidAPI threat databases
-    const threatResult = await checkRapidAPIThreats(email);
+    // Step 2: Check RapidAPI breach database
+    const breachData = await checkRapidAPIThreats(email);
 
-    // Step 3: Log check usage
     await logUsage(customerId, 'BBQE', 'threat_check');
 
     res.json({
-      isBreach: threatResult.isBreach,
-      breachCount: threatResult.breachCount,
-      sources: threatResult.sources,
-      subscriptionRequired: false,
-      checksRemaining: subscriptionStatus.isSubscribed ? 999 : (5 - subscriptionStatus.checksUsed - 1)
+      ...breachData,
+      subscriptionRequired: false
     });
 
   } catch (error) {
     console.error('BBQE error:', error);
-    res.status(500).json({ error: 'Failed to check threats' });
+    res.status(500).json({ error: 'Failed to check threat' });
   }
 });
 
 // ============================================================================
-// RELISH ENDPOINTS (Wellness/Wisdom)
+// RELISH ENDPOINTS (Wisdom/Feelings)
 // ============================================================================
-
-/**
- * POST /api/relish/get-wisdom
- * 
- * Request:
- * {
- *   "customerId": "user_123",
- *   "situation": "I'm feeling overwhelmed at work",
- *   "context": "Career"
- * }
- * 
- * Response:
- * {
- *   "wisdom": "Three-sentence compressed wisdom...",
- *   "tracks": ["Track #2", "Track #37"],
- *   "subscriptionRequired": false
- * }
- */
 
 app.post('/api/relish/get-wisdom', async (req, res) => {
   try {
@@ -189,27 +167,22 @@ app.post('/api/relish/get-wisdom', async (req, res) => {
       return res.status(400).json({ error: 'Situation required' });
     }
 
-    // Step 1: Check subscription
     const subscriptionStatus = await checkSubscription(customerId, 'RELISH');
-    
-    if (!subscriptionStatus.isSubscribed && subscriptionStatus.wisdomUsed >= 10) {
+
+    if (!subscriptionStatus.isSubscribed) {
       return res.status(403).json({
-        error: 'Free limit reached',
+        error: 'Subscription required for wisdom guidance',
         subscriptionRequired: true
       });
     }
 
-    // Step 2: Ask Claude for wisdom (3-sentence compression)
     const wisdom = await getWisdom(situation, context);
 
-    // Step 3: Log wisdom usage
-    await logUsage(customerId, 'RELISH', 'wisdom');
+    await logUsage(customerId, 'RELISH', 'wisdom_request');
 
     res.json({
-      wisdom: wisdom,
-      context: context,
-      subscriptionRequired: false,
-      wisdomRemaining: subscriptionStatus.isSubscribed ? 999 : (10 - subscriptionStatus.wisdomUsed - 1)
+      wisdom,
+      subscriptionRequired: false
     });
 
   } catch (error) {
@@ -219,29 +192,17 @@ app.post('/api/relish/get-wisdom', async (req, res) => {
 });
 
 // ============================================================================
-// REVENUECAT SUBSCRIPTION CHECK
+// SHARED FUNCTIONS
 // ============================================================================
 
 async function checkSubscription(customerId, app) {
-  try {
-    // For now, return mock data
-    // In production: actually call RevenueCat API
-    
-    return {
-      isSubscribed: false,
-      questionsUsed: 0,
-      checksUsed: 0,
-      wisdomUsed: 0
-    };
-  } catch (error) {
-    console.error('Subscription check error:', error);
-    return { isSubscribed: false };
-  }
+  // Placeholder - implement RevenueCat check per app
+  // For now, assume all are subscribed or use free limits
+  return {
+    isSubscribed: false,
+    questionsUsed: 0 // Replace with real count from DB or RevenueCat
+  };
 }
-
-// ============================================================================
-// CLAUDE API CALLS (CATSUP & RELISH)
-// ============================================================================
 
 async function askClaude(question, topic) {
   try {
@@ -253,7 +214,11 @@ async function askClaude(question, topic) {
         messages: [
           {
             role: 'user',
-            content: `You are a Socratic tutor. Answer this question about ${topic || 'general knowledge'} in a way that teaches understanding, not just facts.\n\nQuestion: ${question}\n\nRespond in 2-3 sentences that focus on understanding, not memorization.`
+            content: `You are a Socratic tutor. Answer this question about ${topic} in a way that teaches understanding, not just facts.
+
+Question: ${question}
+
+Respond in 2-3 sentences that focus on understanding, not memorization.`
           }
         ]
       },
