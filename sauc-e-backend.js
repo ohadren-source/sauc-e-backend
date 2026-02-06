@@ -33,6 +33,84 @@ const API_KEYS = {
 };
 
 // ============================================================================
+// FREE TIER LIMITS
+// ============================================================================
+
+const FREE_LIMITS = {
+  CATSUP: 3,
+  BBQE: 5,
+  RELISH: 10
+};
+
+// ============================================================================
+// USAGE TRACKING (Simple in-memory for MVP, upgrade to DB later)
+// ============================================================================
+
+const usageLog = {};
+
+function getUsageCount(customerId, appName) {
+  if (!usageLog[customerId] || !usageLog[customerId][appName]) {
+    return 0;
+  }
+  return usageLog[customerId][appName].count;
+}
+
+function incrementUsage(customerId, appName) {
+  if (!usageLog[customerId]) {
+    usageLog[customerId] = {};
+  }
+  if (!usageLog[customerId][appName]) {
+    usageLog[customerId][appName] = { count: 0, lastUsed: null };
+  }
+  usageLog[customerId][appName].count += 1;
+  usageLog[customerId][appName].lastUsed = new Date();
+}
+
+// ============================================================================
+// SUBSCRIPTION CHECK (RevenueCat server-side verification)
+// ============================================================================
+
+async function checkSubscription(customerId, appName) {
+  try {
+    const rcKey = API_KEYS[`REVENUECAT_${appName}`];
+    
+    if (!rcKey || !customerId || customerId === 'anonymous') {
+      return {
+        isSubscribed: false,
+        usageCount: getUsageCount(customerId, appName),
+        freeLimit: FREE_LIMITS[appName] || 0
+      };
+    }
+
+    const response = await axios.get(
+      `https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(customerId)}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${rcKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const entitlements = response.data?.subscriber?.entitlements || {};
+    const isSubscribed = entitlements['premium'] && entitlements['premium'].expires_date > new Date().toISOString();
+
+    return {
+      isSubscribed: !!isSubscribed,
+      usageCount: getUsageCount(customerId, appName),
+      freeLimit: FREE_LIMITS[appName] || 0
+    };
+  } catch (error) {
+    console.error(`RevenueCat check error (${appName}):`, error.message);
+    return {
+      isSubscribed: false,
+      usageCount: getUsageCount(customerId, appName),
+      freeLimit: FREE_LIMITS[appName] || 0
+    };
+  }
+}
+
+// ============================================================================
 // HEALTH CHECK
 // ============================================================================
 
@@ -41,26 +119,45 @@ app.get('/health', (req, res) => {
 });
 
 // ============================================================================
-// CATSUP ENDPOINTS (Learning/Questions)
+// USAGE STATUS ENDPOINTS (All apps)
 // ============================================================================
 
-/**
- * POST /api/catsup/ask-question
- * 
- * Request:
- * {
- *   "customerId": "user_123",
- *   "question": "What is the Pythagorean theorem?",
- *   "topic": "Mathematics"
- * }
- * 
- * Response:
- * {
- *   "answer": "The Pythagorean theorem states...",
- *   "subscriptionRequired": false,
- *   "questionsRemaining": 2
- * }
- */
+app.post('/api/catsup/usage-status', async (req, res) => {
+  const { customerId } = req.body;
+  const status = await checkSubscription(customerId, 'CATSUP');
+  res.json({
+    usageCount: status.usageCount,
+    freeLimit: status.freeLimit,
+    remaining: status.isSubscribed ? 999 : Math.max(0, status.freeLimit - status.usageCount),
+    isSubscribed: status.isSubscribed
+  });
+});
+
+app.post('/api/bbqe/usage-status', async (req, res) => {
+  const { customerId } = req.body;
+  const status = await checkSubscription(customerId, 'BBQE');
+  res.json({
+    usageCount: status.usageCount,
+    freeLimit: status.freeLimit,
+    remaining: status.isSubscribed ? 999 : Math.max(0, status.freeLimit - status.usageCount),
+    isSubscribed: status.isSubscribed
+  });
+});
+
+app.post('/api/relish/usage-status', async (req, res) => {
+  const { customerId } = req.body;
+  const status = await checkSubscription(customerId, 'RELISH');
+  res.json({
+    usageCount: status.usageCount,
+    freeLimit: status.freeLimit,
+    remaining: status.isSubscribed ? 999 : Math.max(0, status.freeLimit - status.usageCount),
+    isSubscribed: status.isSubscribed
+  });
+});
+
+// ============================================================================
+// CATSUP ENDPOINTS (Learning/Questions)
+// ============================================================================
 
 app.post('/api/catsup/ask-question', async (req, res) => {
   try {
@@ -70,10 +167,10 @@ app.post('/api/catsup/ask-question', async (req, res) => {
       return res.status(400).json({ error: 'Question required' });
     }
 
-    // Step 1: Check subscription via RevenueCat
-    const subscriptionStatus = await checkSubscription(customerId, 'CATSUP');
+    // Step 1: Check subscription + usage
+    const status = await checkSubscription(customerId, 'CATSUP');
     
-    if (!subscriptionStatus.isSubscribed && subscriptionStatus.questionsUsed >= 3) {
+    if (!status.isSubscribed && status.usageCount >= FREE_LIMITS.CATSUP) {
       return res.status(403).json({
         error: 'Free limit reached',
         subscriptionRequired: true,
@@ -84,13 +181,15 @@ app.post('/api/catsup/ask-question', async (req, res) => {
     // Step 2: Ask Claude for answer
     const answer = await askClaude(question, topic);
 
-    // Step 3: Log question usage
-    await logUsage(customerId, 'CATSUP', 'question');
+    // Step 3: Log usage
+    incrementUsage(customerId, 'CATSUP');
+
+    const newCount = getUsageCount(customerId, 'CATSUP');
 
     res.json({
       answer: answer,
       subscriptionRequired: false,
-      questionsRemaining: subscriptionStatus.isSubscribed ? 999 : (3 - subscriptionStatus.questionsUsed - 1)
+      questionsRemaining: status.isSubscribed ? 999 : Math.max(0, FREE_LIMITS.CATSUP - newCount)
     });
 
   } catch (error) {
@@ -103,24 +202,6 @@ app.post('/api/catsup/ask-question', async (req, res) => {
 // BBQE ENDPOINTS (Security/Threat Checks)
 // ============================================================================
 
-/**
- * POST /api/bbqe/check-threat
- * 
- * Request:
- * {
- *   "customerId": "user_123",
- *   "email": "test@example.com"
- * }
- * 
- * Response:
- * {
- *   "isBreach": true/false,
- *   "breachCount": 5,
- *   "sources": ["Database A", "Database B"],
- *   "subscriptionRequired": false
- * }
- */
-
 app.post('/api/bbqe/check-threat', async (req, res) => {
   try {
     const { customerId, email } = req.body;
@@ -129,20 +210,22 @@ app.post('/api/bbqe/check-threat', async (req, res) => {
       return res.status(400).json({ error: 'Email required' });
     }
 
-    // Step 1: Check subscription
-    const subscriptionStatus = await checkSubscription(customerId, 'BBQE');
+    // Step 1: Check subscription + usage
+    const status = await checkSubscription(customerId, 'BBQE');
 
-    if (!subscriptionStatus.isSubscribed) {
+    if (!status.isSubscribed && status.usageCount >= FREE_LIMITS.BBQE) {
       return res.status(403).json({
-        error: 'Subscription required for threat checks',
-        subscriptionRequired: true
+        error: 'Free limit reached',
+        subscriptionRequired: true,
+        checksRemaining: 0
       });
     }
 
     // Step 2: Check RapidAPI breach database
     const breachData = await checkRapidAPIThreats(email);
 
-    await logUsage(customerId, 'BBQE', 'threat_check');
+    // Step 3: Log usage
+    incrementUsage(customerId, 'BBQE');
 
     res.json({
       ...breachData,
@@ -167,22 +250,29 @@ app.post('/api/relish/get-wisdom', async (req, res) => {
       return res.status(400).json({ error: 'Situation required' });
     }
 
-    const subscriptionStatus = await checkSubscription(customerId, 'RELISH');
+    // Step 1: Check subscription + usage
+    const status = await checkSubscription(customerId, 'RELISH');
 
-    if (!subscriptionStatus.isSubscribed) {
+    if (!status.isSubscribed && status.usageCount >= FREE_LIMITS.RELISH) {
       return res.status(403).json({
-        error: 'Subscription required for wisdom guidance',
-        subscriptionRequired: true
+        error: 'Free limit reached',
+        subscriptionRequired: true,
+        wisdomRemaining: 0
       });
     }
 
+    // Step 2: Get wisdom from Claude
     const wisdom = await getWisdom(situation, context);
 
-    await logUsage(customerId, 'RELISH', 'wisdom_request');
+    // Step 3: Log usage
+    incrementUsage(customerId, 'RELISH');
+
+    const newCount = getUsageCount(customerId, 'RELISH');
 
     res.json({
       wisdom,
-      subscriptionRequired: false
+      subscriptionRequired: false,
+      wisdomRemaining: status.isSubscribed ? 999 : Math.max(0, FREE_LIMITS.RELISH - newCount)
     });
 
   } catch (error) {
@@ -194,15 +284,6 @@ app.post('/api/relish/get-wisdom', async (req, res) => {
 // ============================================================================
 // SHARED FUNCTIONS
 // ============================================================================
-
-async function checkSubscription(customerId, app) {
-  // Placeholder - implement RevenueCat check per app
-  // For now, assume all are subscribed or use free limits
-  return {
-    isSubscribed: false,
-    questionsUsed: 0 // Replace with real count from DB or RevenueCat
-  };
-}
 
 async function askClaude(question, topic) {
   try {
@@ -311,24 +392,6 @@ async function checkRapidAPIThreats(email) {
 }
 
 // ============================================================================
-// USAGE LOGGING (Simple in-memory for MVP, upgrade to DB later)
-// ============================================================================
-
-const usageLog = {};
-
-async function logUsage(customerId, app, action) {
-  if (!usageLog[customerId]) {
-    usageLog[customerId] = {};
-  }
-  if (!usageLog[customerId][app]) {
-    usageLog[customerId][app] = { count: 0, lastUsed: null };
-  }
-  
-  usageLog[customerId][app].count += 1;
-  usageLog[customerId][app].lastUsed = new Date();
-}
-
-// ============================================================================
 // ERROR HANDLING
 // ============================================================================
 
@@ -346,9 +409,13 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🔥 SAUC-E Backend running on port ${PORT}`);
   console.log(`✓ CATSUP endpoint: POST /api/catsup/ask-question`);
-  console.log(`✓ BBQE endpoint: POST /api/bbqe/check-threat`);
+  console.log(`✓ CATSUP usage:    POST /api/catsup/usage-status`);
+  console.log(`✓ BBQE endpoint:   POST /api/bbqe/check-threat`);
+  console.log(`✓ BBQE usage:      POST /api/bbqe/usage-status`);
   console.log(`✓ RELISH endpoint: POST /api/relish/get-wisdom`);
-  console.log(`✓ Health check: GET /health`);
+  console.log(`✓ RELISH usage:    POST /api/relish/usage-status`);
+  console.log(`✓ Health check:    GET /health`);
+  console.log(`✓ Free limits: CATSUP=${FREE_LIMITS.CATSUP}, BBQE=${FREE_LIMITS.BBQE}, RELISH=${FREE_LIMITS.RELISH}`);
 });
 
 module.exports = app;
