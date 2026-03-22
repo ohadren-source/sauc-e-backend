@@ -1,0 +1,158 @@
+<div id="sauc-e-checkout" style="font-family: Calibri, 'Trebuchet MS', sans-serif; background-color: #000; color: #fff; max-width: 600px; margin: 0 auto; padding: 40px 20px; text-align: center;">
+
+  <h1 style="color: #900003; font-size: 36px; font-weight: bold; margin-bottom: 8px;">Check It Out Y'all!</h1>
+  <p style="color: #999; font-size: 14px; font-style: italic; margin-bottom: 32px;">If you're down for it, let's get a BK Deli App. Prep by NOLA...</p>
+
+  <!-- Product Selector -->
+  <div style="margin-bottom: 24px;">
+    <select id="product-selector" onchange="updateCheckout()" style="font-family: Calibri, 'Trebuchet MS', sans-serif; font-size: 16px; font-weight: 600; padding: 12px 20px; border-radius: 8px; border: 1px solid #555; background-color: #1a1a1a; color: #fff; width: 300px; cursor: pointer; text-align: center;">
+      <option value="">— Select a Plan —</option>
+      <option value="relish-monthly">RELISH (3,6,9) — $9.99/month</option>
+      <option value="catsup-monthly">CATSUP (3,6,9) — $9.99/month</option>
+      <option value="catsup-annual">CATSUP (3,6,9) — $39.99/year</option>
+      <option value="bbqe-monthly">BBQE (3,6,9) — $3.99/month</option>
+    </select>
+  </div>
+
+  <!-- Plan Card -->
+  <div style="background-color: #1a1a1a; border-radius: 12px; padding: 24px; margin-bottom: 24px; border-left: 4px solid #900003;">
+    <h2 id="plan-name" style="color: #fff; font-size: 22px; margin: 0 0 4px 0;">RELISH (3,6,9)</h2>
+    <p id="plan-subtitle" style="color: #ccc; font-size: 14px; margin: 0 0 4px 0;">Peak Flavour — $9.99/month</p>
+    <p id="plan-desc" style="color: #666; font-size: 12px; margin: 0 0 20px 0;">for Feelings. unlimited questions. maximum compression, decompression, and clarity. CDC.</p>
+    <p style="color: #999; font-size: 11px; margin: 0 0 16px 0;">$9.99 &lt; 3 hot dogs + tax</p>
+
+    <div style="margin-bottom: 16px;">
+      <select id="payment-method-selector" style="font-family: Calibri, 'Trebuchet MS', sans-serif; font-size: 14px; font-weight: 600; padding: 10px 16px; border-radius: 8px; border: 1px solid #555; background-color: #333; color: #fff; width: 240px; cursor: pointer;">
+        <option value="">— Select Payment Method —</option>
+        <option value="stripe">Stripe</option>
+        <option value="paypal">PayPal</option>
+        <option value="square">Square</option>
+      </select>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+
+      <!-- Stripe -->
+      <a id="stripe-link" href="" target="_blank" rel="noopener" style="display: none; background-color: #900003; color: #fff; text-decoration: none; padding: 12px 32px; border-radius: 24px; font-size: 15px; font-weight: 600; font-family: Calibri, 'Trebuchet MS', sans-serif; width: 240px; text-align: center;">Pay with Stripe</a>
+
+      <!-- PayPal -->
+      <div id="paypal-button-container" style="width: 260px; display: none;"></div>
+
+      <!-- Square -->
+      <a id="square-link" href="" target="_blank" rel="noopener" style="display: none; background-color: #333; color: #fff; text-decoration: none; padding: 12px 32px; border-radius: 24px; font-size: 15px; font-weight: 600; font-family: Calibri, 'Trebuchet MS', sans-serif; border: 1px solid #555; width: 240px; text-align: center;">Pay with Square</a>
+
+    </div>
+  </div>
+
+  <p style="color: #666; font-size: 11px; margin-top: 24px;">No runaround. You email, we handle it. We read every message and actually help.</p>
+  <p style="color: #333; font-size: 10px; margin-top: 8px;">© 2026 3_6_NIFE.pi · 36Nife@gmail.com</p>
+
+</div>
+
+<script>
+// ============================================================================
+// PRODUCTS — One dropdown. Four options.
+// ============================================================================
+var PRODUCTS = {
+  'relish-monthly': {
+    name: 'RELISH (3,6,9)',
+    subtitle: 'Peak Flavour — $9.99/month',
+    desc: 'for Feelings. unlimited questions. maximum compression, decompression, and clarity. CDC.',
+    stripe: 'https://buy.stripe.com/28E00l3HOg638gA6hxa3u00',
+    paypal_plan_id: 'P-58676712YW9357247NG6XZXI',
+    square: 'https://square.link/u/Dy47v0xv'
+  },
+  'catsup-monthly': {
+    name: 'CATSUP (3,6,9)',
+    subtitle: 'Peak Flavour — $9.99/month',
+    desc: 'for Learning. Socratic questioning. delicious apps for healthy digital consumption.',
+    stripe: 'https://buy.stripe.com/00w00lcek075bsM8pFa3u01',
+    paypal_plan_id: 'P-7ES60485XB000951VNG77OZY',
+    square: 'https://square.link/u/rmOCqIRD'
+  },
+  'catsup-annual': {
+    name: 'CATSUP (3,6,9)',
+    subtitle: 'Peak Flavour — $39.99/year',
+    desc: 'for Learning. Socratic questioning. annual plan. excellent value.',
+    stripe: 'https://buy.stripe.com/6oUeVfa6c7zx9kE35la3u02',
+    paypal_plan_id: 'P-97U37228YV854831UNG77RBA',
+    square: 'https://square.link/u/X31L44EG'
+  },
+  'bbqe-monthly': {
+    name: 'BBQE (3,6,9)',
+    subtitle: 'Peak Flavour — $3.99/month',
+    desc: 'for Safety & Security. email breach scanning. link analysis. Wi-Fi detection.',
+    stripe: 'BBQE_STRIPE_LINK_HERE',
+    paypal_plan_id: 'BBQE_PAYPAL_PLAN_HERE',
+    square: 'BBQE_SQUARE_LINK_HERE'
+  }
+};
+
+function updateCheckout() {
+  var productKey = document.getElementById('product-selector').value;
+  var paymentMethod = document.getElementById('payment-method-selector').value;
+  
+  if (!productKey) {
+    // Hide everything if no product selected
+    document.getElementById('plan-name').textContent = '';
+    document.getElementById('plan-subtitle').textContent = '';
+    document.getElementById('plan-desc').textContent = '';
+    document.getElementById('stripe-link').style.display = 'none';
+    document.getElementById('paypal-button-container').style.display = 'none';
+    document.getElementById('square-link').style.display = 'none';
+    return;
+  }
+
+  var product = PRODUCTS[productKey];
+  if (!product) return;
+
+  document.getElementById('plan-name').textContent = product.name;
+  document.getElementById('plan-subtitle').textContent = product.subtitle;
+  document.getElementById('plan-desc').textContent = product.desc;
+
+  // Hide all payment buttons by default
+  document.getElementById('stripe-link').style.display = 'none';
+  document.getElementById('paypal-button-container').style.display = 'none';
+  document.getElementById('square-link').style.display = 'none';
+
+  // Show selected payment method
+  if (paymentMethod === 'stripe') {
+    document.getElementById('stripe-link').href = product.stripe;
+    document.getElementById('stripe-link').style.display = 'inline-block';
+  } else if (paymentMethod === 'paypal') {
+    document.getElementById('paypal-button-container').style.display = 'block';
+    var container = document.getElementById('paypal-button-container');
+    container.innerHTML = '';
+    renderPaypalButton(product.paypal_plan_id);
+  } else if (paymentMethod === 'square') {
+    document.getElementById('square-link').href = product.square;
+    document.getElementById('square-link').style.display = 'inline-block';
+  }
+}
+
+// Add event listener to payment method dropdown
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('payment-method-selector').addEventListener('change', updateCheckout);
+});
+
+function renderPaypalButton(planId) {
+  paypal.Buttons({
+    style: {
+      shape: 'pill',
+      color: 'gold',
+      layout: 'vertical',
+      label: 'subscribe'
+    },
+    createSubscription: function(data, actions) {
+      return actions.subscription.create({
+        plan_id: planId
+      });
+    },
+    onApprove: function(data, actions) {
+      alert('Subscribed! Welcome to Peak Flavour. Your subscription ID: ' + data.subscriptionID);
+    }
+  }).render('#paypal-button-container');
+}
+</script>
+
+<script src="https://www.paypal.com/sdk/js?client-id=AVgRLqaI6z1lMNaxoGT7YqKQxKMjd-fW9TF69JDlcXwUyO8A0EvbhT39ANcfai-zL-byHOJrMC7h0FGa&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
