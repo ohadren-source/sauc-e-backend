@@ -100,6 +100,77 @@ app.post('/api/catsup/ask-question', async (req, res) => {
 });
 
 // ============================================================================
+// CATSUP WEB ENDPOINTS (Aliases for web platform)
+// ============================================================================
+
+/**
+ * POST /api/catsup/get-lesson
+ * Web frontend uses "get-lesson" instead of "ask-question"
+ * Same logic, different field names (situation/context vs question/topic)
+ */
+app.post('/api/catsup/get-lesson', async (req, res) => {
+  try {
+    const { customerId, situation, context } = req.body;
+
+    if (!situation) {
+      return res.status(400).json({ error: 'Question required' });
+    }
+
+    const subscriptionStatus = await checkSubscription(customerId, 'CATSUP');
+
+    if (!subscriptionStatus.isSubscribed && subscriptionStatus.questionsUsed >= 9) {
+      return res.status(403).json({
+        error: 'Free limit reached',
+        subscriptionRequired: true,
+        lessonsRemaining: 0
+      });
+    }
+
+    const lesson = await askClaude(situation, context);
+
+    await logUsage(customerId, 'CATSUP', 'lesson');
+
+    res.json({
+      lesson: lesson,
+      wisdom: lesson,
+      subscriptionRequired: false,
+      lessonsRemaining: subscriptionStatus.isSubscribed ? 999 : (9 - subscriptionStatus.questionsUsed - 1)
+    });
+
+  } catch (error) {
+    console.error('CATSUP get-lesson error:', error);
+    res.status(500).json({ error: 'Failed to get lesson' });
+  }
+});
+
+/**
+ * POST /api/catsup/usage-status
+ * Returns current usage count for the web free tier
+ */
+app.post('/api/catsup/usage-status', async (req, res) => {
+  try {
+    const { customerId } = req.body;
+    const cid = customerId || 'anonymous';
+
+    const usage = usageLog[cid] && usageLog[cid]['CATSUP']
+      ? usageLog[cid]['CATSUP'].count
+      : 0;
+
+    const subscriptionStatus = await checkSubscription(cid, 'CATSUP');
+
+    res.json({
+      usageCount: usage,
+      freeLimit: 9,
+      remaining: subscriptionStatus.isSubscribed ? 999 : Math.max(0, 9 - usage),
+      isSubscribed: subscriptionStatus.isSubscribed
+    });
+  } catch (error) {
+    console.error('CATSUP usage-status error:', error);
+    res.json({ usageCount: 0, freeLimit: 9, remaining: 9, isSubscribed: false });
+  }
+});
+
+// ============================================================================
 // BBQE ENDPOINTS (Security/Threat Checks)
 // ============================================================================
 

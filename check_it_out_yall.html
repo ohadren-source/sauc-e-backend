@@ -7,10 +7,11 @@
   <div style="margin-bottom: 24px;">
     <select id="product-selector" onchange="updateCheckout()" style="font-family: Calibri, 'Trebuchet MS', sans-serif; font-size: 16px; font-weight: 600; padding: 12px 20px; border-radius: 8px; border: 1px solid #555; background-color: #1a1a1a; color: #fff; width: 300px; cursor: pointer; text-align: center;">
       <option value="">— Select a Plan —</option>
-      <option value="relish-monthly">RELISH (3,6,9) — $9.99/month</option>
-      <option value="catsup-monthly">CATSUP (3,6,9) — $9.99/month</option>
-      <option value="catsup-annual">CATSUP (3,6,9) — $39.99/year</option>
-      <option value="bbqe-monthly">BBQE (3,6,9) — $3.99/month</option>
+      <option value="relish-monthly">RELISH (3,6,9) — $9.99/month (Peak)</option>
+      <option value="catsup-monthly">CATSUP (3,6,9) — $9.99/month (Student)</option>
+      <option value="catsup-annual">CATSUP (3,6,9) — $39.99/year (School)</option>
+      <option value="bbqe-premium">BBQE (3,6,9) — $0.99/month (Premium)</option>
+      <option value="bbqe-pitboss">BBQE (3,6,9) — $19.99/year (PitBoss)</option>
     </select>
   </div>
 
@@ -78,13 +79,21 @@ var PRODUCTS = {
     paypal_plan_id: 'P-97U37228YV854831UNG77RBA',
     square: 'https://square.link/u/X31L44EG'
   },
-  'bbqe-monthly': {
+  'bbqe-premium': {
     name: 'BBQE (3,6,9)',
-    subtitle: 'Peak Flavour — $3.99/month',
-    desc: 'for Safety & Security. email breach scanning. link analysis. Wi-Fi detection.',
-    stripe: 'BBQE_STRIPE_LINK_HERE',
-    paypal_plan_id: 'BBQE_PAYPAL_PLAN_HERE',
-    square: 'BBQE_SQUARE_LINK_HERE'
+    subtitle: 'Digital Safety — $0.99/month',
+    desc: 'for Security. Link Scanner + WiFi Check. unlimited guidance. covenant pricing.',
+    stripe: 'https://buy.stripe.com/00w00l7Y42fdcwQ7lBa3u03',
+    paypal_plan_id: 'P-45948399FA681270DNHAH43Y',
+    square: 'https://square.link/u/eNAhvKce'
+  },
+  'bbqe-pitboss': {
+    name: 'BBQE (3,6,9)',
+    subtitle: 'Digital Safety — $19.99/year',
+    desc: 'for Security. Link Scanner + WiFi Check + Breach Scanner + Future Sauce. unlimited access.',
+    stripe: 'https://buy.stripe.com/00w9AVdiobPNgN6gWba3u04',
+    paypal_plan_id: 'P-17886177FN0218458NHAH2JA',
+    square: 'https://square.link/u/8ts00aqg'
   }
 };
 
