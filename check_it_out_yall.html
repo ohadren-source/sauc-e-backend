@@ -158,8 +158,18 @@ function renderPaypalButton(planId) {
       });
     },
     onApprove: function(data, actions) {
-      alert('Subscribed! Welcome to Peak Flavour. Your subscription ID: ' + data.subscriptionID);
-    }
+      var productKey = document.getElementById('product-selector').value;
+      var destinations = {
+        'relish-monthly': 'https://cats-up.fun',
+        'catsup-monthly': 'https://cats-up.app',
+        'catsup-annual': 'https://cats-up.app',
+        'bbqe-premium': 'https://catsup.net',
+        'bbqe-pitboss': 'https://catsup.net'
+      };
+  var dest = destinations[productKey] || 'https://sauc-e.com';
+  localStorage.setItem('sauce_premium', 'true');
+  window.location.href = dest + '?subscribed=true';
+}
   }).render('#paypal-button-container');
 }
 </script>
