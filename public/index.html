@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAUC-E · The Secret Sauce Behind Your Apps</title>
+  <meta name="description" content="SAUC-E powers CATSUP, RELISH, and BBQ-E — because every great stack needs a little sauce. Spice up your digital life today." />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red:    #900003;
+      --gold:   #c8932a;
+      --smoke:  #1a1a1a;
+      --ash:    #2c2c2c;
+      --ember:  #3d1010;
+      --cream:  #f5efe6;
+      --muted:  #888;
+      --white:  #ffffff;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--smoke);
+      color: var(--cream);
+      font-family: 'Georgia', 'Times New Roman', serif;
+      line-height: 1.7;
+    }
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 99;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 2rem;
+      background: rgba(26,26,26,0.97);
+      border-bottom: 2px solid var(--red);
+    }
+    .nav-logo { font-size: 1.6rem; font-weight: bold; color: var(--red); letter-spacing: 2px; }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 1.8rem; font-size: 0.95rem; }
+    .nav-links a { color: var(--cream); }
+    .nav-links a:hover { color: var(--gold); text-decoration: none; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 92vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      background:
+        radial-gradient(ellipse at 60% 40%, rgba(144,0,3,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse at 30% 70%, rgba(200,147,42,0.1) 0%, transparent 60%),
+        var(--smoke);
+    }
+    .hero-eyebrow {
+      font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.2rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      line-height: 1.08;
+      color: var(--white);
+      max-width: 820px;
+      margin-bottom: 1.4rem;
+    }
+    .hero h1 em { color: var(--red); font-style: normal; }
+    .hero h1 strong { color: var(--gold); }
+    .hero-sub {
+      font-size: clamp(1rem, 2.2vw, 1.3rem);
+      color: var(--muted);
+      max-width: 620px;
+      margin-bottom: 2.6rem;
+    }
+    .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 2.2rem;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); text-decoration: none; }
+    .btn-primary { background: var(--red); color: var(--white); }
+    .btn-secondary { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
+    .hero-footnote {
+      margin-top: 3rem;
+      font-size: 0.78rem;
+      color: #555;
+      letter-spacing: 1px;
+    }
+
+    /* ── Section shared ── */
+    section { padding: 5rem 2rem; }
+    .section-label {
+      font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--red); margin-bottom: 0.6rem;
+    }
+    h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+    h2 em { color: var(--gold); font-style: normal; }
+    .lead {
+      font-size: 1.1rem; color: var(--muted); max-width: 680px; margin-bottom: 3rem;
+    }
+
+    /* ── Apps Grid ── */
+    .apps-section { background: var(--ash); }
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .app-card {
+      background: var(--smoke);
+      border: 1px solid #333;
+      border-top: 4px solid var(--red);
+      border-radius: 8px;
+      padding: 2rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .app-card:hover { border-top-color: var(--gold); transform: translateY(-4px); }
+    .app-card-icon { font-size: 2.4rem; margin-bottom: 0.8rem; }
+    .app-card h3 { font-size: 1.5rem; color: var(--white); margin-bottom: 0.5rem; }
+    .app-card h3 span { color: var(--red); }
+    .app-card .tagline { font-size: 0.85rem; color: var(--gold); margin-bottom: 1rem; letter-spacing: 0.5px; }
+    .app-card p { font-size: 0.95rem; color: var(--muted); }
+    .app-card .pill {
+      display: inline-block; margin-top: 1rem;
+      padding: 0.2rem 0.7rem; border-radius: 20px;
+      font-size: 0.75rem; background: var(--ember); color: var(--gold);
+    }
+
+    /* ── How It Works ── */
+    .how-section { max-width: 900px; margin: 0 auto; }
+    .steps { display: flex; flex-direction: column; gap: 2.4rem; }
+    .step { display: flex; gap: 1.5rem; align-items: flex-start; }
+    .step-num {
+      flex-shrink: 0; width: 2.4rem; height: 2.4rem;
+      border-radius: 50%; background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; font-weight: bold; color: var(--white);
+    }
+    .step-body h4 { color: var(--white); margin-bottom: 0.3rem; font-size: 1.1rem; }
+    .step-body p { color: var(--muted); font-size: 0.95rem; }
+
+    /* ── Pricing ── */
+    .pricing-section { background: var(--ash); text-align: center; }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .price-card {
+      background: var(--smoke);
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 2rem 1.5rem;
+      position: relative;
+    }
+    .price-card.featured { border-color: var(--gold); }
+    .price-card .badge {
+      position: absolute; top: -0.7rem; left: 50%; transform: translateX(-50%);
+      background: var(--gold); color: var(--smoke);
+      font-size: 0.7rem; font-weight: bold; letter-spacing: 1px;
+      padding: 0.2rem 0.8rem; border-radius: 20px; text-transform: uppercase;
+    }
+    .price-card h4 { color: var(--white); font-size: 1.1rem; margin-bottom: 0.3rem; }
+    .price-card .app-name { font-size: 0.8rem; color: var(--gold); margin-bottom: 1rem; }
+    .price-card .amount {
+      font-size: 2rem; font-weight: bold; color: var(--white); margin-bottom: 0.2rem;
+    }
+    .price-card .period { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.2rem; }
+    .price-card ul { list-style: none; font-size: 0.88rem; color: var(--muted); text-align: left; }
+    .price-card ul li { padding: 0.25rem 0; }
+    .price-card ul li::before { content: "✓ "; color: var(--gold); }
+    .price-cta { margin-top: 3rem; color: var(--muted); font-size: 0.9rem; }
+
+    /* ── Philosophy ── */
+    .philosophy { max-width: 760px; margin: 0 auto; }
+    .philosophy blockquote {
+      border-left: 4px solid var(--red);
+      padding-left: 1.5rem;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--cream);
+      margin: 2rem 0;
+    }
+    .philosophy blockquote cite { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; font-style: normal; }
+
+    /* ── Easter Egg Section (visually hidden, HTML-comment eggs) ── */
+    /* 🥚 Found one! Keep digging — this page is seasoned throughout. */
+
+    /* ── Footer ── */
+    footer {
+      background: #111;
+      border-top: 2px solid var(--red);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .footer-logo { font-size: 1.8rem; font-weight: bold; color: var(--red); letter-spacing: 3px; margin-bottom: 0.5rem; }
+    .footer-logo span { color: var(--gold); }
+    .footer-tagline { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; font-size: 0.88rem; }
+    .footer-copy { font-size: 0.78rem; color: #444; }
+    .footer-copy a { color: #555; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .step { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🥚 Egg #1: The page title itself — "The Secret Sauce Behind Your Apps" -->
+<!-- 🥚 Egg #2: SAUC-E spelled with a hyphen = Saucy + Sauce + "E" for electronic/era -->
+<!-- 🥚 Egg #3: The meta description hides "every great stack needs a little sauce" — stack = tech stack AND a stack of pancakes -->
+
+<!-- ═══════════════════════════════════════════ NAV ═══ -->
+<nav>
+  <!-- 🥚 Egg #4: "SAUC-E" nav logo — the hyphen is doing heavy lifting (sauce-y, saucy, e-commerce) -->
+  <div class="nav-logo">SAUC<span>-E</span></div>
+  <div class="nav-links">
+    <a href="#apps">Our Spread</a>       <!-- 🥚 Egg #5: "Our Spread" = condiment spread + product lineup -->
+    <a href="#how">The Recipe</a>        <!-- 🥚 Egg #6: "The Recipe" = how-it-works + cooking recipe -->
+    <a href="#pricing">Today's Specials</a>  <!-- 🥚 Egg #7: "Today's Specials" = diner menu + pricing page -->
+    <a href="check_it_out_yall.html" class="btn btn-primary" style="padding:0.4rem 1rem;font-size:0.9rem;">Get Sauced</a>
+    <!-- 🥚 Egg #8: "Get Sauced" = subscribe/purchase + the slang "to get sauced" + our sauce brand -->
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ HERO ═══ -->
+<section class="hero">
+  <p class="hero-eyebrow">🔥 Fresh off the grill · EST. 3.6.9</p>
+  <!-- 🥚 Egg #9: "Fresh off the grill" = brand new + BBQ cooking term -->
+  <!-- 🥚 Egg #10: "EST. 3.6.9" looks like a founding date but is the pricing tier 3,6,9 -->
+
+  <h1>
+    We've Got the <em>Sauce</em><br/>
+    Your Apps Were <strong>Missing</strong>
+  </h1>
+  <!-- 🥚 Egg #11: "We've Got the Sauce" = street slang for skill/confidence AND literal sauce brand -->
+  <!-- 🥚 Egg #12: "Your Apps Were Missing" — apps as in applications AND appetizers (apps = appetizers on a menu) -->
+
+  <p class="hero-sub">
+    Three saucy apps. One secret recipe. Zero filler.
+    Whether you're <strong>catching up</strong>, staying safe, or learning to
+    <strong>relish the moment</strong> — we've slow-smoked something special for you.
+  </p>
+  <!-- 🥚 Egg #13: "catching up" = CATSUP (ketchup) + actually catching up on education -->
+  <!-- 🥚 Egg #14: "relish the moment" = RELISH app + the phrase "to relish" (enjoy) + relish condiment -->
+  <!-- 🥚 Egg #15: "slow-smoked" = BBQ-E + we took our time building it -->
+  <!-- 🥚 Egg #16: "Zero filler" = no fluff/junk AND filler is a cheap meat ingredient (hot dog filler) -->
+
+  <div class="btn-row">
+    <a href="#apps" class="btn btn-primary">See What's Cooking</a>
+    <!-- 🥚 Egg #17: "See What's Cooking" = explore our apps + kitchen expression for "what's happening" -->
+    <a href="#pricing" class="btn btn-secondary">Check the Menu</a>
+    <!-- 🥚 Egg #18: "Check the Menu" = see pricing + restaurant menu -->
+  </div>
+
+  <p class="hero-footnote">
+    <!-- 🥚 Egg #19: The footnote hides "runs on CATSUP sauce" — the backend is literally called sauc-e, and CATSUP is the learning app -->
+    Runs on CATSUP Sauce 🔥 &nbsp;·&nbsp; Seasoned with Wisdom &nbsp;·&nbsp; Served Well-Done
+    <!-- 🥚 Egg #20: "Served Well-Done" = high quality service + well-done steak (fully cooked) -->
+    <!-- 🥚 Egg #21: "Seasoned with Wisdom" = experienced/seasoned (adjective) + cooking seasoning (noun) + the RELISH wisdom feature -->
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════ APPS ═══ -->
+<section class="apps-section" id="apps">
+  <div style="max-width:1100px;margin:0 auto;">
+    <p class="section-label">The Whole Spread</p>
+    <!-- 🥚 Egg #22: "The Whole Spread" = entire product lineup + condiment spread on a table -->
+    <h2>Three Apps. One <em>Saucy</em> Ecosystem.</h2>
+    <p class="lead">
+      Every great meal needs the right condiments.
+      We built three of them — and unlike that mystery bottle at the back of your fridge,
+      these only get better with time.
+    </p>
+    <!-- 🥚 Egg #23: "mystery bottle at the back of your fridge" = hidden/forgotten condiment + unknown/undiscovered software -->
+
+    <div class="apps-grid">
+
+      <!-- CATSUP -->
+      <div class="app-card">
+        <div class="app-card-icon">🍅</div>
+        <h3>CAT<span>SUP</span></h3>
+        <!-- 🥚 Egg #24: CATSUP = ketchup (catsup is the old-fashioned spelling) + "CAT" the animal + "SUP" = eat/dine + "catch up" -->
+        <div class="tagline">"Ketchup on anything — we'll wait."</div>
+        <!-- 🥚 Egg #25: "Ketchup on anything" = catch up on learning + ketchup condiment -->
+        <p>
+          The Socratic-tutor app that helps students, parents, and lifelong learners
+          <strong>catch up</strong> on any subject. Ask a question; get understanding,
+          not just an answer. Because the best sauce isn't handed to you — it's earned.
+        </p>
+        <!-- 🥚 Egg #26: "the best sauce isn't handed to you — it's earned" = wisdom/learning AND cooking metaphor about making your own sauce -->
+        <span class="pill">🎓 School's Never Out for the Saucy</span>
+        <!-- 🥚 Egg #27: "School's Never Out for the Saucy" = Alice Cooper "School's Out" parody + saucy = clever/bold students -->
+      </div>
+
+      <!-- BBQ-E -->
+      <div class="app-card">
+        <div class="app-card-icon">🔥</div>
+        <h3>BBQ<span>-E</span></h3>
+        <!-- 🥚 Egg #28: BBQ-E = BBQ + "B.B.Q.E." as initials + "-E" for electronic/digital + sounds like "Barbie" (grill) -->
+        <div class="tagline">"Don't get burned — we've got the smoker."</div>
+        <!-- 🥚 Egg #29: "Don't get burned" = cyber-scam victim + burning food on the grill -->
+        <p>
+          Digital safety, smoked to perfection. BBQ-E scans suspicious links, checks
+          Wi-Fi threats, and hunts down data breaches — so your personal info stays
+          <strong>off the chopping block</strong>.
+          Our PitBoss tier goes where no spatula has gone before.
+        </p>
+        <!-- 🥚 Egg #30: "off the chopping block" = idiomatic phrase (safe from being cut) + chopping block in a kitchen -->
+        <!-- 🥚 Egg #31: "PitBoss" tier = BBQ pit master + boss/premium tier + the Pit Boss brand of grills -->
+        <!-- 🥚 Egg #32: "no spatula has gone before" = Star Trek parody "where no man has gone before" + spatula (BBQ tool) -->
+        <span class="pill">🛡️ Smoked, Not Hacked</span>
+        <!-- 🥚 Egg #33: "Smoked, Not Hacked" = BBQ smoked meat + "hacked" (cyber breach) + "not hacked" = safe -->
+      </div>
+
+      <!-- RELISH -->
+      <div class="app-card">
+        <div class="app-card-icon">🌿</div>
+        <h3>REL<span>ISH</span></h3>
+        <!-- 🥚 Egg #34: RELISH = the condiment + "to relish" (to deeply enjoy) + "reli-sh" sounds like "rely-ish" (sort of rely on) -->
+        <div class="tagline">"Life's too short to eat plain."</div>
+        <!-- 🥚 Egg #35: "Life's too short to eat plain" = enjoy life fully + don't eat boring food + use our app -->
+        <p>
+          Your pocket-sized wisdom guide for life's complicated moments.
+          RELISH compresses centuries of human insight into three sentences —
+          because you deserve <strong>peak flavour</strong>, not watered-down advice.
+          Add some RELISH to every decision.
+        </p>
+        <!-- 🥚 Egg #36: "peak flavour" = the Premium tier name AND the peak of good flavor in cooking -->
+        <!-- 🥚 Egg #37: "watered-down advice" = diluted wisdom (bad) + watered-down sauce (bad cooking) -->
+        <!-- 🥚 Egg #38: "Add some RELISH to every decision" = use the app + add relish to a hotdog + enjoying your choices -->
+        <span class="pill">🌱 Marinating on the Big Questions</span>
+        <!-- 🥚 Egg #39: "Marinating on the big questions" = pondering/thinking + marinating meat in sauce -->
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ HOW IT WORKS ═══ -->
+<section id="how">
+  <div class="how-section">
+    <p class="section-label">The Recipe</p>
+    <h2>How the <em>Magic</em> Gets Made</h2>
+    <p class="lead">
+      Great sauce doesn't appear from thin air. Here's what's simmering under the lid.
+    </p>
+    <!-- 🥚 Egg #40: "simmering under the lid" = cooking on low heat + hidden/secret processes running beneath the surface -->
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Pick Your Flavour</h4>
+          <!-- 🥚 Egg #41: "Pick Your Flavour" = choose your app + pick a sauce flavor + British/Canadian spelling (flavour) is a subtle wink -->
+          <p>
+            Download CATSUP, BBQ-E, or RELISH — or sample all three. Think of it as the
+            condiment tasting flight at a restaurant that actually has its act together.
+            Three free tastes on us. No reservations required.
+          </p>
+          <!-- 🥚 Egg #42: "condiment tasting flight" = fancy restaurant + free trial of apps -->
+          <!-- 🥚 Egg #43: "No reservations required" = restaurant pun + no commitment needed to start -->
+          <!-- 🥚 Egg #44: "Three free tastes on us" = 3-question/3-scan free tier + tasting menu portion -->
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Let It Simmer</h4>
+          <!-- 🥚 Egg #45: "Let It Simmer" = cooking step + let the AI process your input -->
+          <p>
+            Our back-end — nicknamed SAUC-E (it's doing a lot of work back there) —
+            runs your question, link, or situation through the fire.
+            We're not just stirring the pot; we're <em>slow-cooking</em> insights
+            so they actually stick to the ribs.
+          </p>
+          <!-- 🥚 Egg #46: "doing a lot of work back there" = backend server + kitchen staff "working in the back" -->
+          <!-- 🥚 Egg #47: "stirring the pot" = causing trouble (idiom) + literally stirring cooking pot -->
+          <!-- 🥚 Egg #48: "stick to the ribs" = BBQ ribs + satisfying/lasting knowledge -->
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Served Hot</h4>
+          <!-- 🥚 Egg #49: "Served Hot" = delivered immediately + food served hot from the kitchen -->
+          <p>
+            Results come back crispy, concise, and actionable.
+            Whether it's a Socratic answer, a threat report, or three sentences of wisdom —
+            no filler, no fluff, and absolutely zero mystery meat.
+            Well-done, if we do say so ourselves.
+          </p>
+          <!-- 🥚 Egg #50: "crispy, concise, and actionable" = good content qualities + crispy = cooked well (BBQ) -->
+          <!-- 🥚 Egg #51: "mystery meat" = unknown ingredients + the "mystery" in cybersecurity threats -->
+          <!-- 🥚 Egg #52: "Well-done, if we do say so ourselves" = we're proud + well-done steak + pun on "well done" as compliment -->
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Go Back for Seconds</h4>
+          <!-- 🥚 Egg #53: "Go Back for Seconds" = upgrade/subscribe + going back for a second helping of food -->
+          <p>
+            Loved it? Upgrade to the 3,6,9 tier of your choice and get unlimited helpings.
+            Students, pit bosses, and peak-flavour seekers all get their own table.
+            The sauce is always better when you commit to the bottle.
+          </p>
+          <!-- 🥚 Egg #54: "unlimited helpings" = unlimited usage tier + second helpings at dinner -->
+          <!-- 🥚 Egg #55: "their own table" = restaurant table + dedicated tier/plan -->
+          <!-- 🥚 Egg #56: "commit to the bottle" = subscription commitment + ketchup/hot sauce bottle -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ PHILOSOPHY ═══ -->
+<section style="background:var(--ember);">
+  <div class="philosophy">
+    <p class="section-label">The Manifesto</p>
+    <h2>We Believe in <em>Good Sauce</em></h2>
+    <!-- 🥚 Egg #57: "Good Sauce" = great software + actual good condiment + slang for "in a good position/source" -->
+
+    <blockquote>
+      "Every great app, like every great dish, starts with a secret sauce —
+      and ours isn't a secret. It's just well-seasoned."
+      <cite>— 3_6_NIFE, Head Chef & Chief Sauce Officer</cite>
+      <!-- 🥚 Egg #58: "Chief Sauce Officer" = CSO = Chief Security Officer parody + literal sauce officer -->
+      <!-- 🥚 Egg #59: "Head Chef" = founder/lead developer + restaurant head chef -->
+      <!-- 🥚 Egg #60: "3_6_NIFE" = 3,6,9 tier numbers + NIFE = "knife" without the k (silent k) = chef's knife -->
+    </blockquote>
+
+    <p style="color:var(--muted); font-size:0.95rem;">
+      We built SAUC-E because the internet needed apps that don't treat users like
+      short-order customers — quick ticket in, mystery plate out.
+      Instead, we're running a <strong>slow-food establishment</strong> in a fast-food world.
+      <!-- 🥚 Egg #61: "short-order customers" = fast-food/diner term + users treated as commodity -->
+      <!-- 🥚 Egg #62: "slow-food establishment" = Slow Food movement (real thing) + deliberate, quality-first app design -->
+      <!-- 🥚 Egg #63: "fast-food world" = modern attention-economy + literal fast food industry -->
+    </p>
+    <p style="color:var(--muted); font-size:0.95rem; margin-top:1rem;">
+      CATSUP is for the curious. BBQ-E is for the careful. RELISH is for the contemplative.
+      All three are for anyone who's ever thought: <em>"There's got to be a better way to
+      do this."</em> Spoiler: there is. And it comes in a bottle.
+      <!-- 🥚 Egg #64: "it comes in a bottle" = the solution/app + sauce/ketchup in a bottle -->
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ PRICING ═══ -->
+<section class="pricing-section" id="pricing">
+  <p class="section-label">Today's Specials</p>
+  <!-- 🥚 Egg #65: repeated "Today's Specials" = daily menu specials + the "today's specials.png" image in the repo -->
+  <h2>Pick Your <em>Tier</em></h2>
+  <!-- 🥚 Egg #66: "Tier" sounds like "tear" — as in "tear open the sauce packet" — and also tear as in crying from joy -->
+  <p class="lead" style="margin:0 auto 3rem;">
+    All plans come with our famous 3,6,9 satisfaction guarantee:
+    <em>Taste it at 3, love it at 6, can't live without it at 9.</em>
+    <!-- 🥚 Egg #67: "3,6,9" = pricing tiers + counting game (3-6-9 drinking game) + Chance the Rapper "3 6 9" -->
+    <!-- 🥚 Egg #68: "can't live without it at 9" = addiction to quality product + the number 9 as "divine" in numerology -->
+  </p>
+
+  <div class="pricing-grid">
+
+    <div class="price-card">
+      <h4>Student</h4>
+      <div class="app-name">🍅 CATSUP Monthly</div>
+      <!-- 🥚 Egg #69: "Student" tier name = learn like a student + the student/beginner level in most apps -->
+      <div class="amount">$9.99</div>
+      <div class="period">per month</div>
+      <ul>
+        <li>Unlimited questions</li>
+        <li>All subjects covered</li>
+        <li>Catch up at your own pace</li>
+        <!-- 🥚 Egg #70: "Catch up at your own pace" = CATSUP + idiom for learning/catching up without pressure -->
+      </ul>
+    </div>
+
+    <div class="price-card featured">
+      <div class="badge">Most Saucy</div>
+      <!-- 🥚 Egg #71: "Most Saucy" = most popular tier badge + saucy = bold/cheeky -->
+      <h4>School</h4>
+      <div class="app-name">🍅 CATSUP Annual</div>
+      <div class="amount">$39.99</div>
+      <div class="period">per year</div>
+      <ul>
+        <li>Everything in Student</li>
+        <li>Best value per question</li>
+        <li>A full year to ketchup</li>
+        <!-- 🥚 Egg #72: "A full year to ketchup" = a year to use the app + ketchup = catch up -->
+      </ul>
+    </div>
+
+    <div class="price-card">
+      <h4>Premium</h4>
+      <div class="app-name">🔥 BBQ-E Monthly</div>
+      <div class="amount">$0.99</div>
+      <div class="period">per month</div>
+      <ul>
+        <li>Advanced link scanning</li>
+        <li>Wi-Fi risk checks</li>
+        <li>Fire up your defenses</li>
+        <!-- 🥚 Egg #73: "Fire up your defenses" = activate security + fire up the BBQ/grill -->
+      </ul>
+    </div>
+
+    <div class="price-card">
+      <h4>PitBoss</h4>
+      <!-- 🥚 Egg #74: "PitBoss" = BBQ pit master + the person who runs the operation (boss) + Pit Boss brand grills -->
+      <div class="app-name">🔥 BBQ-E Annual</div>
+      <div class="amount">$19.99</div>
+      <div class="period">per year</div>
+      <ul>
+        <li>Everything in Premium</li>
+        <li>Breach / dark-web scans</li>
+        <li>Master of the digital pit</li>
+        <!-- 🥚 Egg #75: "Master of the digital pit" = cyber expert + BBQ pit master -->
+      </ul>
+    </div>
+
+    <div class="price-card">
+      <h4>Peak Flavour</h4>
+      <!-- 🥚 Egg #76: "Peak Flavour" = best taste possible + peak performance + Canadian/British spelling "flavour" wink again -->
+      <div class="app-name">🌿 RELISH Monthly</div>
+      <div class="amount">$9.99</div>
+      <div class="period">per month</div>
+      <ul>
+        <li>Unlimited wisdom requests</li>
+        <li>All life categories</li>
+        <li>Savour every insight</li>
+        <!-- 🥚 Egg #77: "Savour every insight" = enjoy deeply + savour (taste/flavour) + British/Canadian spelling -->
+      </ul>
+    </div>
+
+  </div>
+
+  <p class="price-cta">
+    Ready to commit? Head to
+    <a href="check_it_out_yall.html">Today's Specials →</a>
+    &nbsp;·&nbsp; Questions? Simmer down and email
+    <a href="mailto:36Nife@gmail.com">36Nife@gmail.com</a>
+    <!-- 🥚 Egg #78: "Simmer down" = cool it (idiom) + cooking: reduce heat/simmer down a sauce -->
+    <!-- 🥚 Egg #79: "36Nife" = 3,6,9 tier + "knife" (chef's tool, spells out 3-6-Nife = "36 knife") + silent K convention -->
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════ FOOTER ═══ -->
+<footer>
+  <div class="footer-logo">SAUC<span>-E</span></div>
+  <p class="footer-tagline">
+    The secret sauce is that there is no secret. Just good ingredients, well combined.
+    <!-- 🥚 Egg #80: Parody of Bruce Lee's "secret of my success" / Ratatouille themes — anyone can cook (program) -->
+  </p>
+  <div class="footer-links">
+    <a href="#apps">Our Spread</a>
+    <a href="#pricing">Today's Specials</a>
+    <a href="check_it_out_yall.html">Order Up</a>
+    <!-- 🥚 Egg #81: "Order Up" = restaurant kitchen call when food is ready + place your order/subscribe -->
+    <a href="mailto:36Nife@gmail.com">Drop Us a Line</a>
+    <!-- 🥚 Egg #82: "Drop Us a Line" = contact us + fishing line + "drop" something in a sauce pot -->
+  </div>
+  <p class="footer-copy">
+    © 2026 <strong>3_6_NIFE.pi</strong>
+    <!-- 🥚 Egg #83: "3_6_NIFE.pi" = 3,6,9 + knife + pi (π = 3.14159…) mathematical constant hidden as a file extension -->
+    &nbsp;·&nbsp; SAUC-E · CATSUP · BBQ-E · RELISH
+    &nbsp;·&nbsp; <a href="mailto:36Nife@gmail.com">36Nife@gmail.com</a>
+    <br/>
+    <span style="font-size:0.7rem; color:#333;">
+      Made with 🔥 · Aged to perfection · No artificial flavours · Gluten-free opinions
+      <!-- 🥚 Egg #84: "Aged to perfection" = high-quality software + aged cheese/wine/condiment -->
+      <!-- 🥚 Egg #85: "No artificial flavours" = food label parody + no fake features/padding in the apps -->
+      <!-- 🥚 Egg #86: "Gluten-free opinions" = no-nonsense (free of excess) + gluten-free food labeling trend -->
+    </span>
+  </p>
+</footer>
+
+<!--
+  ════════════════════════════════════════════════════════════
+  🥚 BONUS EASTER EGGS — hidden in the source, not the render
+  ════════════════════════════════════════════════════════════
+
+  Egg #87: This comment block. You found it. Congratulations — you
+           clearly know how to "dig through the source", which is
+           exactly what a good chef does to find the best ingredients.
+
+  Egg #88: The CSS class ".btn-primary" + the action "Get Sauced" together
+           mean the PRIMARY action on this site is to "get sauced" —
+           the brand's cheeky call-to-action doubles as the product.
+
+  Egg #89: The section IDs: #apps, #how, #pricing —
+           Reading them in reverse: pricing → how → apps
+           = "Pricing? How? Apps!" — the classic confused customer journey,
+           answered in reverse order by a savvy chef.
+
+  Egg #90: The copyright "3_6_NIFE.pi" — the underscore in Unix/Linux
+           is sometimes called the "low dash" or "floor" — so this reads
+           as "3 floor 6 knife pie" = a recipe hidden in a filename.
+
+  Egg #91: "EST. 3.6.9" in the hero eyebrow — formatted like a date
+           (March 6th, 2009? June 9th, 2003?) but it's actually the tier
+           pricing structure. No founding date is given, keeping it
+           mysteriously "seasoned."
+
+  Egg #92: The apps are CATSUP (tomato 🍅), BBQ-E (fire 🔥), RELISH (herb 🌿) —
+           together they form a complete hot dog topping: ketchup + grilled + relish.
+           The entire product suite is a LOADED HOT DOG. 🌭
+
+  Egg #93: SAUC-E's tagline could be read as an anagram hint:
+           "SAUC-E" rearranged → "CAUSE" (with a hyphen dropped).
+           The cause? Better apps. Also, every great sauce has a cause.
+
+  Egg #94: The nav item "The Recipe" links to #how — but in cooking,
+           a "how-to" IS a recipe. The URL fragment and the label
+           are the same thing wearing different hats.
+
+  Egg #95: The free tier is 3 questions (CATSUP), 5 scans (BBQ-E),
+           10 requests (RELISH) — 3 + 5 + 10 = 18 = 3 × 6 (half of 36)
+           = 36Nife's number hiding in the free tier arithmetic.
+
+  Egg #96: "check_it_out_yall.html" — the checkout page filename is
+           written in a Southern US accent. "Y'all" = "you all."
+           The site is technically speaking with a drawl,
+           like a BBQ joint in Texas would.
+
+  ════════════════════════════════════════════════════════════
+-->
+
+</body>
+</html>
