@@ -11,11 +11,18 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ============================================================================
+// STATIC FILES & MAIN PAGE
+// ============================================================================
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ============================================================================
 // API KEYS (Hardcoded on backend, hidden from iOS)
