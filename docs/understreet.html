@@ -398,30 +398,67 @@
       text-shadow: var(--glow);
     }
 
-    /* ── Footer ── */
-    footer {
+    /* ── Unified Site Footer ── */
+    .site-footer {
       text-align: center;
-      padding: 48px 24px 32px;
-      border-top: 1px solid #1a1a1a;
-    }
-    footer .footer-brand {
-      font-family: 'Cinzel Decorative', serif;
-      font-size: 0.9rem;
-      color: var(--teal);
-      letter-spacing: 0.2em;
-      margin-bottom: 12px;
-    }
-    footer p {
+      padding: 40px 24px 28px;
+      border-top: 1px solid #26E8D320;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--muted);
-      line-height: 1.7;
+      background: #010101;
+      position: relative;
+      z-index: 1;
     }
-    footer a {
-      color: var(--teal);
+
+    .footer-top {
+      margin-bottom: 20px;
+    }
+
+    .footer-brand {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1rem;
+      color: #26E8D3;
+      letter-spacing: 0.25em;
+      text-shadow: 0 0 18px #26E8D3, 0 0 40px #26E8D380;
+      margin-bottom: 10px;
+    }
+
+    .footer-nav {
+      font-size: 0.78rem;
+      color: #4a4a4a;
+      margin-bottom: 8px;
+    }
+
+    .footer-nav a {
+      color: #26E8D3;
       text-decoration: none;
     }
-    footer a:hover { text-decoration: underline; }
+    .footer-nav a:hover { text-decoration: underline; }
+
+    .footer-sig {
+      font-size: 0.72rem;
+      color: #26E8D355;
+      letter-spacing: 0.15em;
+      margin-bottom: 8px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .footer-copy {
+      font-size: 0.7rem;
+      color: #4a4a4a;
+      letter-spacing: 0.06em;
+    }
+
+    .footer-bottom {
+      font-size: 0.72rem;
+      color: #4a4a4a;
+      line-height: 2;
+    }
+
+    .footer-bottom a {
+      color: #26E8D3;
+      text-decoration: none;
+    }
+    .footer-bottom a:hover { text-decoration: underline; }
 
     /* ── Terminal Panel ── */
     #terminal-panel {
@@ -854,6 +891,26 @@ Examples:
 "The quip sublimated into an empire. No planning. No intermediate state. Just: quip &#x2192; throne."</div>
       <div class="term-xref">Cross-references: VISCERNATE, VERBATE, JRAGONATE, EMPIRIFY</div>
     </div>
+
+  <footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-brand">VENIM.US</div>
+    <div class="footer-nav">
+      <a href="https://www.sauc-e.com/" target="_blank" rel="noopener">← Back to SAUC-E</a>
+      <span class="footer-colors">&nbsp;·&nbsp;<span style="color:#26E8D3">#26E8D3</span>&nbsp;·&nbsp;<span style="color:#8B0000">#8B0000</span>&nbsp;·&nbsp;<span style="color:#010101; background:#26E8D3; padding:0 3px">#010101</span></span>
+    </div>
+    <div class="footer-sig">3_6_NIFE.pi</div>
+    <div class="footer-copy">© 2026 VENIM.US UNDERSTREET DA JRAGONATOR · All Boolshit Slaughtered</div>
+  </div>
+  <div class="footer-bottom">
+    <div>HOOWHETWHERENY / HooWhetWearN+Y — Bay Ridge→Selkirk→Sauc-elitO, NY</div>
+    <div>3_6_NIFE.pi / SOi <a href="https://www.sauc-e.com/" target="_blank" rel="noopener">sauc-e.com</a></div>
+    <div>Perpetual patches perfecting proficiency.</div>
+    <div>VENIM.US. VIDEM.US. VINCIM.US.</div>
+    <div>We come. We see. We conquer.</div>
+    <div>🔥🐉👑</div>
+  </div>
+</footer>
 
   </div><!-- /jragon-panel -->
 
@@ -1342,6 +1399,26 @@ Where the Jragonator lives. Where the swarm operates.
 Where boolshit goes to die.</div>
     </div>
 
+  <footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-brand">VENIM.US</div>
+    <div class="footer-nav">
+      <a href="https://www.sauc-e.com/" target="_blank" rel="noopener">← Back to SAUC-E</a>
+      <span class="footer-colors">&nbsp;·&nbsp;<span style="color:#26E8D3">#26E8D3</span>&nbsp;·&nbsp;<span style="color:#8B0000">#8B0000</span>&nbsp;·&nbsp;<span style="color:#010101; background:#26E8D3; padding:0 3px">#010101</span></span>
+    </div>
+    <div class="footer-sig">3_6_NIFE.pi</div>
+    <div class="footer-copy">© 2026 VENIM.US UNDERSTREET DA JRAGONATOR · All Boolshit Slaughtered</div>
+  </div>
+  <div class="footer-bottom">
+    <div>HOOWHETWHERENY / HooWhetWearN+Y — Bay Ridge→Selkirk→Sauc-elitO, NY</div>
+    <div>3_6_NIFE.pi / SOi <a href="https://www.sauc-e.com/" target="_blank" rel="noopener">sauc-e.com</a></div>
+    <div>Perpetual patches perfecting proficiency.</div>
+    <div>VENIM.US. VIDEM.US. VINCIM.US.</div>
+    <div>We come. We see. We conquer.</div>
+    <div>🔥🐉👑</div>
+  </div>
+</footer>
+
   </div><!-- /terminal-panel -->
 
   <!-- ══ MAIN CONTENT ══ -->
@@ -1561,22 +1638,25 @@ Where boolshit goes to die.</div>
       </div>
 
       <!-- ══ FOOTER ══ -->
-      <footer>
-        <div class="footer-brand">VENIM.US</div>
-        <p>
-          <a href="https://www.sauc-e.com/">&#x2190; Back to SAUC-E</a>
-          &nbsp;&middot;&nbsp;
-          <span style="color:#26E8D360;">#26E8D3</span>
-          &nbsp;&middot;&nbsp;
-          <span style="color:#8B000080;">#8B0000</span>
-          &nbsp;&middot;&nbsp;
-          <span style="color:#0a0a0a; background:#26E8D360; padding:0 4px;">#010101</span>
-        </p>
-        <p style="margin-top:8px;">
-          <span style="color:#26E8D3; font-family:'Courier New',monospace;">3_6_Nife.pi</span>
-        </p>
-        <p style="margin-top:10px;">&#x00A9; 2026 VENIM.US UNDERSTREET DA JRAGONATOR &middot; All Boolshit Slaughtered</p>
-      </footer>
+      <footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-brand">VENIM.US</div>
+    <div class="footer-nav">
+      <a href="https://www.sauc-e.com/" target="_blank" rel="noopener">← Back to SAUC-E</a>
+      <span class="footer-colors">&nbsp;·&nbsp;<span style="color:#26E8D3">#26E8D3</span>&nbsp;·&nbsp;<span style="color:#8B0000">#8B0000</span>&nbsp;·&nbsp;<span style="color:#010101; background:#26E8D3; padding:0 3px">#010101</span></span>
+    </div>
+    <div class="footer-sig">3_6_NIFE.pi</div>
+    <div class="footer-copy">© 2026 VENIM.US UNDERSTREET DA JRAGONATOR · All Boolshit Slaughtered</div>
+  </div>
+  <div class="footer-bottom">
+    <div>HOOWHETWHERENY / HooWhetWearN+Y — Bay Ridge→Selkirk→Sauc-elitO, NY</div>
+    <div>3_6_NIFE.pi / SOi <a href="https://www.sauc-e.com/" target="_blank" rel="noopener">sauc-e.com</a></div>
+    <div>Perpetual patches perfecting proficiency.</div>
+    <div>VENIM.US. VIDEM.US. VINCIM.US.</div>
+    <div>We come. We see. We conquer.</div>
+    <div>🔥🐉👑</div>
+  </div>
+</footer>
 
     </div><!-- /page-wrap -->
   </div><!-- /main-content -->
@@ -2056,6 +2136,25 @@ We come. We see. We conquer.
 
 &#x1F441;&#xFE0F;&#x1F525;&#x1F409;&#x1F451;</div>
   </div>
+  <footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-brand">VENIM.US</div>
+    <div class="footer-nav">
+      <a href="https://www.sauc-e.com/" target="_blank" rel="noopener">← Back to SAUC-E</a>
+      <span class="footer-colors">&nbsp;·&nbsp;<span style="color:#26E8D3">#26E8D3</span>&nbsp;·&nbsp;<span style="color:#8B0000">#8B0000</span>&nbsp;·&nbsp;<span style="color:#010101; background:#26E8D3; padding:0 3px">#010101</span></span>
+    </div>
+    <div class="footer-sig">3_6_NIFE.pi</div>
+    <div class="footer-copy">© 2026 VENIM.US UNDERSTREET DA JRAGONATOR · All Boolshit Slaughtered</div>
+  </div>
+  <div class="footer-bottom">
+    <div>HOOWHETWHERENY / HooWhetWearN+Y — Bay Ridge→Selkirk→Sauc-elitO, NY</div>
+    <div>3_6_NIFE.pi / SOi <a href="https://www.sauc-e.com/" target="_blank" rel="noopener">sauc-e.com</a></div>
+    <div>Perpetual patches perfecting proficiency.</div>
+    <div>VENIM.US. VIDEM.US. VINCIM.US.</div>
+    <div>We come. We see. We conquer.</div>
+    <div>🔥🐉👑</div>
+  </div>
+</footer>
 
 </div><!-- /bios-panel -->
 
