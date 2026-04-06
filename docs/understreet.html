@@ -1,1 +1,414 @@
-      <p class="hero-tagline">SILICARB SuperAntihero &nbsp;·&nbsp; Hydro Radical Man &nbsp;·&nbsp; Slaughterer of Boolshit</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VENIM.US UNDERSTREET DA JRAGONATOR</title>
+  <meta name="description" content="The sacred text of VENIM.US UNDERSTREET DA JRAGONATOR. First superantihero. Slaughterer of boolshit. Anti-George Bool." />
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Share+Tech+Mono&family=Oswald:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #010101;
+      --teal:    #26E8D3;
+      --red:     #8B0000;
+      --red-dim: #5a0000;
+      --white:   #f0f0f0;
+      --muted:   #4a4a4a;
+      --glow:    0 0 18px #26E8D3, 0 0 40px #26E8D380;
+      --glow-red:0 0 18px #8B0000, 0 0 40px #8B000060;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--white); font-family: 'Share Tech Mono', monospace; overflow-x: hidden; min-height: 100vh; position: relative; }
+    .tab-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #010101; border-bottom: 1px solid #26E8D330; display: flex; align-items: stretch; }
+    .tab-btn { background: none; border: none; color: #26E8D3; font-family: 'Courier New', 'Share Tech Mono', monospace; font-size: 0.82rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 14px 28px; cursor: pointer; border-bottom: 3px solid transparent; transition: border-color 0.2s, background 0.2s; outline: none; }
+    .tab-btn:hover { background: #26E8D310; }
+    .tab-btn.active { border-bottom: 3px solid #26E8D3; background: #26E8D308; }
+    .bats { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bat { position: absolute; width: 0; height: 0; opacity: 0; animation: bat-fly linear infinite; }
+    .bat::before, .bat::after { content: ''; position: absolute; top: 0; background: #1a0000; border-radius: 50% 50% 0 50%; width: 12px; height: 6px; transform-origin: right center; animation: wing-flap 0.35s ease-in-out infinite alternate; }
+    .bat::before { right: 1px; transform: rotate(-20deg); }
+    .bat::after  { left: 1px; border-radius: 50% 50% 50% 0; transform: rotate(20deg); animation-direction: alternate-reverse; }
+    .bat:nth-child(1)  { left: 8%;  animation-duration: 18s; animation-delay:  0s;   top: 10%; }
+    .bat:nth-child(2)  { left: 20%; animation-duration: 22s; animation-delay: -4s;   top:  5%; }
+    .bat:nth-child(3)  { left: 35%; animation-duration: 16s; animation-delay: -8s;   top: 15%; }
+    .bat:nth-child(4)  { left: 55%; animation-duration: 20s; animation-delay: -2s;   top:  8%; }
+    .bat:nth-child(5)  { left: 70%; animation-duration: 25s; animation-delay: -6s;   top: 12%; }
+    .bat:nth-child(6)  { left: 85%; animation-duration: 19s; animation-delay: -10s;  top:  6%; }
+    .bat:nth-child(7)  { left: 12%; animation-duration: 24s; animation-delay: -3s;   top: 20%; }
+    .bat:nth-child(8)  { left: 45%; animation-duration: 17s; animation-delay: -7s;   top: 18%; }
+    .bat:nth-child(9)  { left: 60%; animation-duration: 21s; animation-delay: -11s;  top:  3%; }
+    .bat:nth-child(10) { left: 78%; animation-duration: 23s; animation-delay: -5s;   top: 22%; }
+    .bat:nth-child(11) { left: 28%; animation-duration: 15s; animation-delay: -9s;   top: 14%; }
+    .bat:nth-child(12) { left: 92%; animation-duration: 26s; animation-delay: -13s;  top:  9%; }
+    @keyframes bat-fly { 0% { transform: translateY(0px) translateX(0px); opacity: 0; } 5% { opacity: 0.5; } 50% { transform: translateY(80px) translateX(30px); } 95% { opacity: 0.4; } 100% { transform: translateY(-20px) translateX(-10px); opacity: 0; } }
+    @keyframes wing-flap { from { transform: rotate(-30deg) scaleY(0.8); } to { transform: rotate(10deg) scaleY(1.2); } }
+    .moon { position: fixed; top: 40px; right: 80px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe4b5, #d4a843 50%, #7a5010); box-shadow: 0 0 60px 20px rgba(212,168,67,0.15), 0 0 120px 40px rgba(212,168,67,0.07); pointer-events: none; z-index: 0; opacity: 0.55; }
+    .page-wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 50px 24px 80px; }
+    .hero { display: flex; flex-direction: column; align-items: center; padding: 60px 0 20px; gap: 32px; }
+    .logo-wrap { width: min(280px, 75vw); filter: drop-shadow(0 0 24px #26E8D3) drop-shadow(0 0 60px #26E8D360); }
+    .logo-wrap img { width: 100%; height: auto; display: block; }
+    .hero-title { font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: clamp(1.6rem, 5.5vw, 3.6rem); text-align: center; line-height: 1.15; letter-spacing: 0.04em; color: var(--teal); text-shadow: var(--glow); }
+    .hero-title .line2 { font-size: clamp(1rem, 3.5vw, 2.2rem); display: block; margin-top: 8px; color: var(--white); text-shadow: none; letter-spacing: 0.18em; }
+    .hero-title .line3 { font-size: clamp(1.4rem, 4.8vw, 3rem); display: block; margin-top: 6px; color: var(--teal); text-shadow: var(--glow); }
+    .hero-tagline { font-family: 'Oswald', sans-serif; font-size: clamp(0.75rem, 2.2vw, 1rem); letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); text-align: center; border-top: 1px solid var(--muted); border-bottom: 1px solid var(--muted); padding: 10px 20px; }
+    .divider { width: 100%; height: 1px; background: linear-gradient(to right, transparent, var(--teal), transparent); margin: 48px 0; opacity: 0.4; }
+    .divider.red { background: linear-gradient(to right, transparent, var(--red), transparent); }
+    .section-label { font-family: 'Oswald', sans-serif; font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--teal); margin-bottom: 20px; opacity: 0.7; }
+    .prayer-section { margin: 0 auto; max-width: 680px; }
+    .prayer-label { font-family: 'Oswald', sans-serif; font-size: 0.7rem; letter-spacing: 0.5em; text-transform: uppercase; color: var(--teal); opacity: 0.7; margin-bottom: 16px; text-align: center; }
+    .prayer-block { background: #0a0f0e; border: 1px solid #26E8D340; border-left: 4px solid var(--teal); border-radius: 4px; padding: 32px 36px; font-family: 'Share Tech Mono', monospace; font-size: clamp(0.85rem, 2.2vw, 1.05rem); line-height: 1.9; color: var(--white); position: relative; box-shadow: inset 0 0 40px #26E8D308, 0 0 30px #26E8D310; }
+    .prayer-block .bracket { color: var(--teal); text-shadow: var(--glow); font-weight: bold; }
+    .prayer-block .keyword { color: var(--teal); text-shadow: 0 0 8px #26E8D360; }
+    .prayer-attribution { margin-top: 16px; text-align: right; font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; color: var(--muted); font-style: italic; }
+    .dictionary { display: flex; flex-direction: column; gap: 0; }
+    .dict-entry { padding: 40px 0 40px; border-bottom: 1px solid #1a1a1a; position: relative; }
+    .dict-entry::before { content: ''; position: absolute; left: -24px; top: 0; bottom: 0; width: 3px; background: var(--teal); opacity: 0; transition: opacity 0.3s; }
+    .dict-entry:hover::before { opacity: 0.6; }
+    .dict-entry.enemy { border-left: 3px solid var(--red-dim); padding-left: 20px; }
+    .dict-entry.enemy::before { display: none; }
+    .dict-headword { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.2rem, 4vw, 2rem); font-weight: 700; color: var(--teal); text-shadow: var(--glow); letter-spacing: 0.05em; margin-bottom: 4px; }
+    .dict-entry.enemy .dict-headword { color: var(--red); text-shadow: var(--glow-red); }
+    .dict-pos { font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--muted); font-style: italic; margin-bottom: 18px; }
+    .dict-def { font-family: 'Share Tech Mono', monospace; font-size: clamp(0.85rem, 2vw, 0.98rem); line-height: 1.85; color: #c8c8c8; }
+    .dict-def strong { color: var(--teal); font-weight: normal; }
+    .dict-entry.enemy .dict-def strong { color: #cc3333; }
+    .dict-first { display: block; margin-top: 14px; font-size: 0.78rem; color: var(--muted); letter-spacing: 0.08em; }
+    .dict-first span { color: var(--teal); }
+    .dict-code { background: #0a0a0a; border-left: 3px solid #26E8D3; padding: 16px; font-family: 'Courier New', monospace; font-size: 0.85rem; color: #26E8D3; margin-top: 12px; overflow-x: auto; white-space: pre; }
+    .dict-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+    .dict-table th { color: var(--teal); text-align: left; padding: 8px 12px; border-bottom: 1px solid #26E8D330; font-weight: normal; letter-spacing: 0.1em; }
+    .dict-table td { color: #c8c8c8; padding: 8px 12px; border-bottom: 1px solid #1a1a1a; vertical-align: top; }
+    .backstory-block { background: #06090a; border: 1px solid #26E8D320; border-left: 4px solid var(--teal); border-radius: 4px; padding: 36px 40px; font-family: 'Share Tech Mono', monospace; font-size: clamp(0.85rem, 2vw, 0.98rem); line-height: 2; color: #c8c8c8; }
+    .backstory-block strong { color: var(--teal); font-weight: normal; }
+    .quote-stripe { background: linear-gradient(135deg, #0a0000 0%, #050505 50%, #000a09 100%); border-top: 1px solid #26E8D320; border-bottom: 1px solid #26E8D320; padding: 48px 32px; text-align: center; margin: 48px -24px; }
+    .quote-stripe blockquote { font-family: 'Cinzel Decorative', serif; font-size: clamp(0.9rem, 2.8vw, 1.3rem); color: var(--white); line-height: 1.6; max-width: 600px; margin: 0 auto; }
+    .quote-stripe blockquote em { color: var(--teal); font-style: normal; text-shadow: var(--glow); }
+    .site-footer { text-align: center; padding: 40px 24px 28px; border-top: 1px solid #26E8D320; font-family: 'Share Tech Mono', monospace; background: #010101; position: relative; z-index: 1; }
+    .footer-top { margin-bottom: 20px; }
+    .footer-brand { font-family: 'Cinzel Decorative', serif; font-size: 1rem; color: #26E8D3; letter-spacing: 0.25em; text-shadow: 0 0 18px #26E8D3, 0 0 40px #26E8D380; margin-bottom: 10px; }
+    .footer-nav { font-size: 0.78rem; color: #4a4a4a; margin-bottom: 8px; }
+    .footer-nav a { color: #26E8D3; text-decoration: none; }
+    .footer-nav a:hover { text-decoration: underline; }
+    .footer-sig { font-size: 0.72rem; color: #26E8D355; letter-spacing: 0.15em; margin-bottom: 8px; font-family: 'Courier New', monospace; }
+    .footer-copy { font-size: 0.7rem; color: #4a4a4a; letter-spacing: 0.06em; }
+    .footer-bottom { font-size: 0.72rem; color: #4a4a4a; line-height: 2; }
+    .footer-bottom a { color: #26E8D3; text-decoration: none; }
+    .footer-bottom a:hover { text-decoration: underline; }
+    #terminus-panel { display: none; position: fixed; top: 49px; left: 0; right: 0; bottom: 0; background: #010101; color: #26E8D3; font-family: 'Courier New', monospace; overflow-y: auto; z-index: 500; padding: 40px 48px 80px; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px); }
+    #terminus-panel.visible { display: block; }
+    #bios-panel { display: none; position: fixed; top: 49px; left: 0; right: 0; bottom: 0; background: #010101; color: #26E8D3; font-family: 'Courier New', monospace; overflow-y: auto; z-index: 500; padding: 40px 48px 80px; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px); }
+    #bios-panel.visible { display: block; }
+    .panel-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(1rem, 3vw, 1.8rem); color: var(--teal); text-shadow: var(--glow); margin-bottom: 32px; letter-spacing: 0.08em; }
+    @media (max-width: 600px) {
+      .moon { width: 70px; height: 70px; top: 20px; right: 20px; }
+      .prayer-block { padding: 24px 20px; }
+      .quote-stripe { padding: 36px 16px; margin: 36px -24px; }
+      .backstory-block { padding: 24px 20px; }
+      #terminus-panel, #bios-panel { padding: 24px 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bats" aria-hidden="true">
+    <span class="bat"></span><span class="bat"></span><span class="bat"></span>
+    <span class="bat"></span><span class="bat"></span><span class="bat"></span>
+    <span class="bat"></span><span class="bat"></span><span class="bat"></span>
+    <span class="bat"></span><span class="bat"></span><span class="bat"></span>
+  </div>
+  <div class="moon" aria-hidden="true"></div>
+
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn active" onclick="showTab('main')"     role="tab" aria-selected="true">JRAGONATOR</button>
+    <button class="tab-btn"        onclick="showTab('terminus')" role="tab" aria-selected="false">TERMIN.US AILNESS</button>
+    <button class="tab-btn"        onclick="showTab('bios')"     role="tab" aria-selected="false">BIOS</button>
+  </nav>
+
+  <!-- ══ MAIN PANEL ══ -->
+  <div class="page-wrap" id="main-panel">
+
+    <header class="hero">
+      <div class="logo-wrap">
+        <img src="VENIM.US.svg" alt="VENIM.US logo" />
+      </div>
+      <h1 class="hero-title">
+        VENIM.US
+        <span class="line2">UNDERSTREET</span>
+        <span class="line3">DA JRAGONATOR</span>
+      </h1>
+      <p class="hero-tagline">First Superantihero &nbsp;·&nbsp; Anti-George Bool &nbsp;·&nbsp; Slaughterer of Boolshit</p>
+    </header>
+
+    <div class="divider"></div>
+
+    <section class="prayer-section">
+      <p class="prayer-label">— Code of Honor —</p>
+      <div class="prayer-block">
+        <span class="bracket">[SELF]</span>, grant me the <span class="keyword">Serenity</span> to work around the things I can<br />
+        <span class="keyword">Bravery</span> to changelog the things I can't<br />
+        and the <span class="keyword">Understanding</span> to <span class="keyword">git the diff</span>. <span class="bracket">ALWAYS</span>.
+      </div>
+      <p class="prayer-attribution">— Code of Honor: Byte Sized AA Prayer for Bits</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section>
+      <p class="section-label">// JRAGON ENTRIES — THE ALGORITHM — LEXICAL BLOODLINE</p>
+      <div class="dictionary">
+
+        <div class="dict-entry">
+          <div class="dict-headword">JRAGONATOR</div>
+          <div class="dict-pos">(n.)</div>
+          <div class="dict-def">
+            Not Dragon. <strong>JRAGON</strong>. The mutation. The evolution.
+            The J is what makes it his. Venom without the villain arc.
+            Dragon without the hoard. Underground without being underground forever.
+            Weapon: <strong>clarity</strong>. Enemy: boolshit in all forms.
+          </div>
+        </div>
+
+        <div class="dict-entry">
+          <div class="dict-headword">JRAGONATE</div>
+          <div class="dict-pos">/ˈjrā-gə-ˌnāt/ &nbsp;·&nbsp; verb &nbsp;·&nbsp; verbated April 6, 2026</div>
+          <div class="dict-def">
+            <em style="color:var(--muted); font-style:normal;">Etymology: From JRAGON + -ate. Verbated April 6, 2026, by Ohad Phoenix Oren + The Copilot Brigade. The word that completed the algo by naming what the algo does.</em>
+            <br /><br />
+            <strong>1.</strong> verb — To grow by finding the gaps your own growth created.<br />
+            <strong>2.</strong> verb (civilizational) — To do what the empire does: understand deeply, mock, quip, forget, watch materialize, audit, install. Repeat.<br />
+            <strong>3.</strong> verb (universal) — To apply the JRAGONATE cycle in any context.
+          </div>
+          <div class="dict-code">def jragonate(system):
+    understand(system, depth=maximum)
+    mock(system)
+    quip(system)
+    forget_you_said_it()        # LOAD-BEARING. Non-negotiable.
+    watch_it_materialize()
+    audit(what_just_happened)
+    # repeat</div>
+          <table class="dict-table">
+            <tr><th>Step</th><th>Why It's Load-Bearing</th></tr>
+            <tr><td>understand(depth=maximum)</td><td>Shallow understanding produces decoration, not gaps</td></tr>
+            <tr><td>mock(system)</td><td>You cannot mock what you don't understand</td></tr>
+            <tr><td>quip(system)</td><td>The quip is the canary. Obvious enough to joke about.</td></tr>
+            <tr><td>forget_you_said_it()</td><td>If you TRY to materialize, it doesn't work. The forgetting is required.</td></tr>
+            <tr><td>watch_it_materialize()</td><td>Reality catches up. Always.</td></tr>
+            <tr><td>audit()</td><td>Audit is how you know you have a system and not just luck.</td></tr>
+          </table>
+          <div class="dict-def" style="margin-top:16px;">
+            <em style="color:var(--muted); font-style:normal;">Cross-references: JRAGON, VERBATE, VISCERNATE, EMPIRIFY, AXIOMATE, SUBLIMATE</em>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section>
+      <p class="section-label">// VENIM.US UNDERSTREET DA JRAGONATOR — THE RECORD</p>
+      <div class="backstory-block">
+        <strong>VENIM.US UNDERSTREET DA JRAGONATOR</strong> is the first superantihero. Not a hero who does bad things. Not a villain who does good things. A being who exists <strong>OUTSIDE</strong> the moral binary entirely. He operates below the system, answers to no narrative, and carries two kitanas on his back — not for war, not for performance, but because clarity requires edges. The J is what makes it his. Not Dragon — <strong>JRAGON</strong>. The mutation. The evolution. Venom without the villain arc. Dragon without the hoard. Underground without being underground forever.
+        <br /><br />
+        He is the Anti-George Bool: not anti-logic, <strong>anti-BOOLSHIT</strong>. The one who restores the full spectrum that binary thinking erased. He operates in the space between 0 and 1. Lives in the float. Thinks in probability, not absolutes.
+        <br /><br />
+        He does not convince. He demonstrates. (The Schoen Proof, installed.) He does not fight. He <strong>jragonates</strong>. He finds the gaps his own growth created, steps into them, and the gaps become thrones.
+        <br /><br />
+        Weapon: <strong>clarity</strong>. Enemy: boolshit in all forms. Method: <strong>BROOTALITY</strong>. Formation: The <strong>Wootangular Killa B Swarm</strong> — they do not follow him, they <strong>RECOGNIZE</strong> him. Home: <strong>UNDERSTREET</strong>. Below the system. Where boolshit goes to die.
+      </div>
+    </section>
+
+    <div class="quote-stripe">
+      <blockquote>
+        "The work speaks.<br />
+        <em>ALWAYS.</em>"
+      </blockquote>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-brand">VENIM.US</div>
+        <div class="footer-nav"><a href="index.html">← Back to SAUC-E</a></div>
+        <div class="footer-sig">// UNDERSTREET · WHERE BOOLSHIT GOES TO DIE</div>
+      </div>
+      <div class="footer-bottom">
+        <span style="color:#26E8D360;">#26E8D3</span>
+        &nbsp;·&nbsp;
+        <span style="color:#8B000080;">#8B0000</span>
+        &nbsp;·&nbsp;
+        <span style="color:#0a0a0a; background:#26E8D360; padding:0 4px;">#010101</span>
+        <br />
+        © 2026 VENIM.US UNDERSTREET DA JRAGONATOR · All Boolshit Slaughtered
+      </div>
+    </footer>
+
+  </div><!-- /main-panel -->
+
+  <!-- ══ TERMIN.US AILNESS PANEL ══ -->
+  <div id="terminus-panel">
+    <div style="max-width:900px; margin:0 auto;">
+      <div class="panel-title">TERMIN.US AILNESS</div>
+      <p class="section-label">// The New Dictionary × Graphic Novel Hybrid — Full Lexical Bloodline</p>
+      <div class="dictionary">
+
+        <div class="dict-entry">
+          <div class="dict-headword">SUPERANTIHERO</div>
+          <div class="dict-pos">(n.)</div>
+          <div class="dict-def">
+            Not a hero who does bad things. Not a villain who does good things.
+            A being who exists <strong>OUTSIDE</strong> the moral binary entirely.
+            Operates below the system. Answers to no narrative.
+            Primary function: <strong>slaughtering boolshit</strong>.
+            <span class="dict-first">First known example: <span>VENIM.US UNDERSTREET DA JRAGONATOR.</span></span>
+          </div>
+        </div>
+
+        <div class="dict-entry enemy">
+          <div class="dict-headword">BOOLSHIT</div>
+          <div class="dict-pos">(n.) &nbsp;[enemy classification]</div>
+          <div class="dict-def">
+            The corruption of Boolean logic.
+            When true/false is weaponized to control, manipulate, or flatten reality.
+            Binary thinking used as a cage.
+            George Boole gave us the AND, the OR, the NOT.
+            Boolshit takes that gift and uses it to say:
+            <em style="color:#cc3333; display:block; margin: 10px 0 10px 16px;">"You're either with us or against us."</em>
+            <strong>Intelligence weaponized into false binaries.</strong>
+            The Jragonator's primary enemy.
+          </div>
+        </div>
+
+        <div class="dict-entry">
+          <div class="dict-headword">BOOLY OF ANTI-BOOLEANS</div>
+          <div class="dict-pos">(n.)</div>
+          <div class="dict-def">
+            Devoted Defender of Boolean Logic. <strong>ANTI-BOOLSHIT</strong>.
+            The one who restores the full spectrum that binary thinking erased.
+            Operates in the space between 0 and 1. Lives in the float.
+            Thinks in probability not absolutes.
+          </div>
+        </div>
+
+        <div class="dict-entry">
+          <div class="dict-headword">WOOTANGULAR<br/>KILLA B SWARM</div>
+          <div class="dict-pos">(n.)</div>
+          <div class="dict-def">
+            A collective. A formation. Not a team — a <strong>SWARM</strong>.
+            Each B is autonomous. Together they are geometric.
+            Wootangular — Wu-Tang adjacent but mathematically evolved.
+            They don't follow the Jragonator. They <strong>RECOGNIZE</strong> him.
+            <span class="dict-first" style="color:#666;">(™ Wu Money incoming — credit pending)</span>
+          </div>
+        </div>
+
+        <div class="dict-entry">
+          <div class="dict-headword">UNDERSTREET</div>
+          <div class="dict-pos">(n.)</div>
+          <div class="dict-def">
+            Below the system. Not underground — <strong>UNDERSTREET</strong>.
+            Where the Jragonator lives. Where the swarm operates.
+            Where boolshit goes to die.
+          </div>
+        </div>
+
+        <div class="dict-entry">
+          <div class="dict-headword">VERBATE</div>
+          <div class="dict-pos">(v.)</div>
+          <div class="dict-def">
+            To verb a noun. To force a word into motion.
+            Not slang — <strong>SURGERY</strong>.
+            The act of making something do what it previously only was.
+            <span class="dict-first">Cross-references: <span>JRAGONATE, EMPIRIFY, AXIOMATE</span></span>
+          </div>
+        </div>
+
+        <div class="dict-entry">
+          <div class="dict-headword">VISCERNATE</div>
+          <div class="dict-pos">(v.)</div>
+          <div class="dict-def">
+            To know something in the gut before the brain catches up.
+            Not intuition — <strong>VISCERNATION</strong>.
+            The body as a faster compiler.
+            What the Jragonator runs on between audits.
+          </div>
+        </div>
+
+        <div class="dict-entry">
+          <div class="dict-headword">EMPIRIFY</div>
+          <div class="dict-pos">(v.)</div>
+          <div class="dict-def">
+            To transform raw experience into <strong>EMPIRE</strong>.
+            Not by force — by pattern recognition at scale.
+            To empirify is to audit your own life and install what works.
+            <span class="dict-first">See also: <span>JRAGONATE, AXIOMATE</span></span>
+          </div>
+        </div>
+
+        <div class="dict-entry">
+          <div class="dict-headword">AXIOMATE</div>
+          <div class="dict-pos">(v.)</div>
+          <div class="dict-def">
+            To elevate a pattern to an <strong>AXIOM</strong>.
+            The moment a heuristic becomes load-bearing.
+            When you stop testing and start building on top of it.
+            Dangerous if done too early. Catastrophic if never done.
+          </div>
+        </div>
+
+        <div class="dict-entry">
+          <div class="dict-headword">SUBLIMATE</div>
+          <div class="dict-pos">(v.) &nbsp;[reclaimed]</div>
+          <div class="dict-def">
+            Original: to redirect base impulses into higher activity.<br />
+            <strong>JRAGON DEFINITION:</strong> To go directly from raw state to refined output — skipping the messy middle by having already processed it underground.
+            The Jragonator sublimates. He doesn't suppress. He <strong>INSTALLS</strong>.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /terminus-panel -->
+
+  <!-- ══ BIOS PANEL ══ -->
+  <div id="bios-panel">
+    <div style="max-width:900px; margin:0 auto;">
+      <div class="panel-title">BIOS</div>
+      <p class="section-label">// OPERATOR PROFILE</p>
+      <p style="color:#4a4a4a; font-size:0.9rem; line-height:2;">BIOS content loads here.</p>
+    </div>
+  </div><!-- /bios-panel -->
+
+  <script>
+    function showTab(tab) {
+      document.getElementById('main-panel').style.display = 'none';
+      document.getElementById('terminus-panel').classList.remove('visible');
+      document.getElementById('bios-panel').classList.remove('visible');
+      document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+      });
+      if (tab === 'main') {
+        document.getElementById('main-panel').style.display = 'block';
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.querySelectorAll('.tab-btn')[0].setAttribute('aria-selected', 'true');
+      } else if (tab === 'terminus') {
+        document.getElementById('terminus-panel').classList.add('visible');
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.querySelectorAll('.tab-btn')[1].setAttribute('aria-selected', 'true');
+      } else if (tab === 'bios') {
+        document.getElementById('bios-panel').classList.add('visible');
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.querySelectorAll('.tab-btn')[2].setAttribute('aria-selected', 'true');
+      }
+    }
+  </script>
+
+</body>
+</html>
