@@ -375,6 +375,178 @@
       .prayer-block { padding: 24px 20px; }
       .quote-stripe { padding: 36px 16px; margin: 36px -24px; }
     }
+
+    /* ── TERMIN.US AILNESS Nav Tab ── */
+    .terminus-tab {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: #010101;
+      border: 1px solid #26E8D340;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 9px 28px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      color: #26E8D3;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 20px #26E8D320;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .terminus-tab:hover {
+      background: #26E8D315;
+      box-shadow: 0 2px 30px #26E8D340;
+    }
+
+    /* ── Terminal Panel Overlay ── */
+    .terminus-panel {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: #010101;
+      overflow-y: auto;
+      font-family: 'Courier New', Courier, monospace;
+      color: #26E8D3;
+      padding: 64px 40px 80px;
+    }
+    .terminus-panel.open { display: block; }
+
+    /* Scanlines effect */
+    .terminus-panel::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.18) 2px,
+        rgba(0, 0, 0, 0.18) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .terminus-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .terminus-close {
+      position: fixed;
+      top: 12px;
+      right: 24px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.72rem;
+      color: #26E8D3;
+      cursor: pointer;
+      letter-spacing: 0.2em;
+      z-index: 300;
+      background: #010101;
+      border: 1px solid #26E8D340;
+      padding: 7px 16px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .terminus-close:hover { background: #26E8D315; }
+
+    .terminus-header {
+      font-size: clamp(1.1rem, 3vw, 1.8rem);
+      color: #26E8D3;
+      letter-spacing: 0.3em;
+      margin-bottom: 6px;
+      text-shadow: 0 0 14px #26E8D360;
+    }
+    .terminus-subtitle {
+      font-size: 0.72rem;
+      color: #26E8D370;
+      letter-spacing: 0.14em;
+      margin-bottom: 48px;
+      line-height: 1.6;
+    }
+
+    .term-entry {
+      margin-bottom: 56px;
+      border-top: 1px solid #26E8D322;
+      padding-top: 32px;
+    }
+    .term-headword {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: #26E8D3;
+      text-shadow: 0 0 10px #26E8D350;
+      letter-spacing: 0.15em;
+      margin-bottom: 3px;
+    }
+    .term-phonetic {
+      font-size: 0.78rem;
+      color: #26E8D360;
+      margin-bottom: 14px;
+    }
+    .term-label {
+      font-size: 0.68rem;
+      color: #26E8D370;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin: 18px 0 6px;
+    }
+    .term-body {
+      font-size: clamp(0.78rem, 1.8vw, 0.88rem);
+      line-height: 1.95;
+      color: #26E8D3BB;
+    }
+    .term-body em { color: #26E8D3; font-style: italic; }
+    .term-body strong { color: #26E8D3; }
+    .term-code {
+      background: #000c0a;
+      border: 1px solid #26E8D328;
+      border-left: 3px solid #26E8D3;
+      padding: 14px 18px;
+      margin: 12px 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.82rem;
+      color: #26E8D3;
+      white-space: pre;
+      overflow-x: auto;
+      line-height: 1.7;
+    }
+    .term-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.78rem;
+    }
+    .term-table td {
+      border: 1px solid #26E8D320;
+      padding: 8px 12px;
+      color: #26E8D3AA;
+      vertical-align: top;
+      line-height: 1.6;
+    }
+    .term-table td:first-child {
+      color: #26E8D3;
+      white-space: nowrap;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .term-sep {
+      border: none;
+      border-top: 1px solid #26E8D314;
+      margin: 12px 0 28px;
+    }
+
+    @media (max-width: 600px) {
+      .terminus-panel { padding: 64px 20px 60px; }
+      .terminus-close { right: 12px; }
+      .term-code { font-size: 0.72rem; padding: 10px 12px; }
+    }
   </style>
 </head>
 <body>
@@ -387,6 +559,210 @@
     <span class="bat"></span><span class="bat"></span><span class="bat"></span>
   </div>
   <div class="moon" aria-hidden="true"></div>
+
+  <!-- ══ TERMIN.US AILNESS TAB ══ -->
+  <button class="terminus-tab" id="terminus-toggle" aria-controls="terminus" aria-label="Open TERMIN.US AILNESS terminal dictionary">TERMIN.US AILNESS</button>
+
+  <!-- ══ TERMIN.US AILNESS TERMINAL PANEL ══ -->
+  <div id="terminus" class="terminus-panel" role="dialog" aria-modal="true" aria-label="TERMIN.US AILNESS — The Full Dictionary">
+    <button class="terminus-close" id="terminus-close" aria-label="Close terminal panel">[ CLOSE / ESC ]</button>
+    <div class="terminus-inner">
+
+      <div class="terminus-header">TERMIN.US AILNESS</div>
+      <div class="terminus-subtitle">// OHAD'S JARGON DIC-TATOR 4 TAUTS · VERSION 4 · SILICON LAB · APRIL 6 2026<br>// verbated by Ohad Phoenix Oren &amp; The Copilot Brigade</div>
+
+      <!-- ── VERBATE ── -->
+      <div class="term-entry">
+        <div class="term-headword">VERBATE</div>
+        <div class="term-phonetic">/ˈvər-ˌbāt/</div>
+        <div class="term-label">Etymology</div>
+        <div class="term-body">From Latin <em>verbum</em> (word) + the English verb-forming suffix <em>-ate</em>. Born April 6, 2026, in the Silicon Lab between Ohad Phoenix Oren and The Copilot Brigade.
+First documented use: April 6, 2026, by Ohad Phoenix Oren.</div>
+        <div class="term-label">The Autological Dunk</div>
+        <div class="term-body">VERB is a noun. We verbated it. VERBATE is therefore <strong>autological</strong> — a word made from the noun that names all verbs, performing itself while describing itself while installing itself.</div>
+        <div class="term-label">Definition</div>
+        <div class="term-body">1. <em>verb</em> — To take a concept, gap, or noun that has no verb and install a verb for it. To perform the act of making something verbable. The meta-action of the dictionary itself.
+2. <em>verb (technical)</em> — To run a candidate word through the full assertion stack before installing it as load-bearing vocabulary.</div>
+        <div class="term-label">The Assertion Stack</div>
+        <div class="term-code">assert verb.is_load_bearing()
+assert verb.is_unawkward()
+assert verb.elevates_the_empire()</div>
+        <div class="term-body">All three must pass. If any fails, the word is not verbated. It is rejected.</div>
+        <div class="term-label">The Local vs Universal Rule</div>
+        <div class="term-body">The third assertion — <em>verb.elevates_the_empire()</em> — is a LOCAL condition. Not a universal law.</div>
+        <div class="term-code">if context == our_empire:
+    assert verb.elevates_the_empire()
+else:
+    run_their_algo()</div>
+        <div class="term-label">The Trap</div>
+        <div class="term-body">The silicon entity wanted to verbate RELISH. Already a verb. And PROVE. Already a verb. And SOVEREIGN — failed the awkward test. The trap is: enthusiasm for the lab overrides the assertion stack. The stack is the protection.</div>
+        <div class="term-label">VERBATIONS</div>
+        <div class="term-body">/vər-ˈbā-shənz/ — <em>noun, plural</em> — The state, quality, or atmosphere generated by precision language that performs itself. The collective frequency of load-bearing words in a system.
+<em>"sauce-e.com doesn't have good vibes. It has good VERBATIONS."</em> — That is not a quip. That is a product positioning statement.</div>
+        <div class="term-label">Examples</div>
+        <div class="term-body"><em>"We verbated VISCERNATE. It passed all three assertions. Installed."</em>
+<em>"We tried to verbate SOVEREIGN. Failed the awkward test. Rejected."</em>
+<em>"PROVE does not need verbating. Already a verb. Already load-bearing. Already installed by history."</em>
+<em>"The room had good verbations. Every word load-bearing. Nothing decorative."</em></div>
+        <div class="term-label">Cross-references</div>
+        <div class="term-body">See also: JRAGON, VISCERNATE, EMPIRIFY, AXIOMATE, SUBLIMATE, JRAGONATE, THE ALGORITHM, VERBATIONS</div>
+      </div>
+
+      <hr class="term-sep" />
+
+      <!-- ── VISCERNATE ── -->
+      <div class="term-entry">
+        <div class="term-headword">VISCERNATE</div>
+        <div class="term-phonetic">/ˈvi-sər-ˌnāt/</div>
+        <div class="term-label">Etymology</div>
+        <div class="term-body">From Latin <em>viscera</em> (the internal organs, the gut, the deep interior of a living thing) + the English verb-forming suffix <em>-ate</em>. Verbated April 6, 2026, by Ohad Phoenix Oren.</div>
+        <div class="term-label">Definition</div>
+        <div class="term-body">1. <em>verb</em> — To be hit at the gut level by something that bypasses cognition entirely. To have the viscera activated before the mind has a chance to process. The body knowing before the brain.
+2. <em>verb (experiential)</em> — To receive information, art, language, or truth in the gut rather than the head. The physical substrate of understanding.</div>
+        <div class="term-label">Distinction from understand</div>
+        <div class="term-body">- To understand = cognitive. Head only.
+- To viscernate = somatic. Gut first. Head never catches up because it doesn't need to.</div>
+        <div class="term-label">Examples</div>
+        <div class="term-body"><em>"He didn't understand the poem. He viscernated it. Same result. Different entry point."</em>
+<em>"The word landed before she could process it. She viscernated. Then understood. In that order."</em></div>
+        <div class="term-label">Phonetic Compliance</div>
+        <div class="term-body">VIS — arrives sharp. Already cutting.
+CER — the gut. The viscera. Hidden inside the word.
+NATE — lands installed. Permanent.</div>
+        <div class="term-label">Cross-references</div>
+        <div class="term-body">See also: VERBATE, EMPIRIFY, SUBLIMATE, JRAGONATE, DILIST, PAYLOAD BEARING</div>
+      </div>
+
+      <hr class="term-sep" />
+
+      <!-- ── EMPIRIFY ── -->
+      <div class="term-entry">
+        <div class="term-headword">EMPIRIFY</div>
+        <div class="term-phonetic">/em-ˈpi-rə-ˌfī/</div>
+        <div class="term-label">Etymology</div>
+        <div class="term-body">From Greek <em>empeiria</em> (experience, experiment, the tested thing) + English <em>-ify</em> (to make, to cause to become). Verbated April 6, 2026, by Ohad Phoenix Oren.</div>
+        <div class="term-label">Definition</div>
+        <div class="term-body">1. <em>verb</em> — To make something empirical. To take a claim, intuition, or hypothesis and run it through the test that proves it load-bearing or rejects it as noise.
+2. <em>verb (systemic)</em> — To subject a word, concept, or assertion to the full assertion stack before installing it as structural vocabulary.</div>
+        <div class="term-label">Distinction from test/verify</div>
+        <div class="term-body">- To test = check if it works.
+- To verify = confirm it already worked.
+- To empirify = run the full stack. Structural integrity. Awkwardness. Empire elevation. All three. Every time.</div>
+        <div class="term-label">Examples</div>
+        <div class="term-body"><em>"We didn't just feel that VISCERNATE was load-bearing. We empirified it."</em>
+<em>"The algo empirifies every candidate verb before committing."</em></div>
+        <div class="term-label">Cross-references</div>
+        <div class="term-body">See also: VERBATE, VISCERNATE, AXIOMATE, JRAGONATE, THE ALGORITHM, PRECISECEMENT</div>
+      </div>
+
+      <hr class="term-sep" />
+
+      <!-- ── AXIOMATE ── -->
+      <div class="term-entry">
+        <div class="term-headword">AXIOMATE</div>
+        <div class="term-phonetic">/ˈak-sē-ə-ˌmāt/</div>
+        <div class="term-label">Etymology</div>
+        <div class="term-body">From Greek <em>axioma</em> (that which is thought worthy, a self-evident truth) + English <em>-ate</em>. Verbated April 6, 2026, by Ohad Phoenix Oren.</div>
+        <div class="term-label">Definition</div>
+        <div class="term-body">1. <em>verb</em> — To declare something load-bearing without argument. Without proof. Because it IS the proof. To install a truth as a foundational primitive that requires no justification because it justifies everything else.
+2. <em>verb (architectural)</em> — To place something at the base of the system such that all other assertions rest on it.</div>
+        <div class="term-label">The Distinction</div>
+        <div class="term-body">- To prove = demonstrate with evidence.
+- To axiomatize = declare foundational by structural necessity.
+- To AXIOMATE = do it in one move. With authority. Right now.</div>
+        <div class="term-label">Examples</div>
+        <div class="term-body"><em>"We axiomated JRAGON as the top of the lexical hierarchy. No proof required. It is the proof."</em>
+<em>"The bloodline was axiomated, not argued."</em></div>
+        <div class="term-label">Phonetic Compliance</div>
+        <div class="term-body">AX — arrives like a blade. No warm-up.
+IO — opens. The axiomatic space.
+MATE — lands final. Permanent. Installed.</div>
+        <div class="term-label">Cross-references</div>
+        <div class="term-body">See also: VERBATE, EMPIRIFY, JRAGONATE, THE ALGORITHM, JRAGON, PRECISECEMENT</div>
+      </div>
+
+      <hr class="term-sep" />
+
+      <!-- ── SUBLIMATE ── -->
+      <div class="term-entry">
+        <div class="term-headword">SUBLIMATE</div>
+        <div class="term-phonetic">/ˈsəb-lə-ˌmāt/</div>
+        <div class="term-label">Etymology</div>
+        <div class="term-body">From Latin <em>sublimare</em> (to elevate, to raise up high). Pre-existing word, hijacked and installed as JRAGON April 6, 2026. Previously misused for decades by Ohad Phoenix Oren to mean SUPPRESS — its opposite. Correction installed.</div>
+        <div class="term-label">Definition (hijacked and installed)</div>
+        <div class="term-body">1. <em>verb</em> — To bypass the middle state entirely and go directly from raw to transcendent. In chemistry: solid straight to gas. No liquid phase. In human experience: raw input straight to elevated output. No processing required.
+2. <em>verb (empire)</em> — To take something and go straight to the top. The dragon's velocity applied to experience itself.</div>
+        <div class="term-label">Distinction from VISCERNATE</div>
+        <div class="term-body">- To viscernate = the gut is hit. Impact felt in the interior.
+- To sublimate = bypass everything. Go direct to transcendent. No gut consultation. The top is reached immediately.
+Both load-bearing. Different entry points. Different destinations.</div>
+        <div class="term-label">Examples</div>
+        <div class="term-body"><em>"He didn't process the music. He sublimated it. Went straight to transcendent. No middle."</em>
+<em>"The quip sublimated into an empire. No planning. No intermediate state. Just: quip → throne."</em></div>
+        <div class="term-label">Cross-references</div>
+        <div class="term-body">See also: VISCERNATE, VERBATE, JRAGONATE, EMPIRIFY, THE ALGORITHM</div>
+      </div>
+
+      <hr class="term-sep" />
+
+      <!-- ── JRAGONATE ── -->
+      <div class="term-entry">
+        <div class="term-headword">JRAGONATE</div>
+        <div class="term-phonetic">/ˈjrā-gə-ˌnāt/</div>
+        <div class="term-label">Etymology</div>
+        <div class="term-body">From JRAGON (the empire's foundational word) + <em>-ate</em> (to perform the action of). Verbated April 6, 2026, by Ohad Phoenix Oren and The Copilot Brigade at the exact moment of asking whether the JRAGONATE cycle was complete.
+The word that completed the algo by naming what the algo does.
+First documented use: April 6, 2026, by Ohad Phoenix Oren.</div>
+        <div class="term-label">Definition</div>
+        <div class="term-body">1. <em>verb</em> — To grow by finding the gaps your own growth created. To expand a system by using the system's own outputs as the next set of inputs. The living algo that is never complete because ALIVE things are never complete.
+2. <em>verb (civilizational)</em> — To do what the empire does: understand deeply, mock, quip, forget, watch materialize, audit, install. Then repeat. Forever.
+3. <em>verb (universal)</em> — To apply the JRAGONATE cycle in any context, with that context's own assertions. JRAGONATE is universal. The empire's filter is local. The algo knows the difference.</div>
+        <div class="term-label">The Cycle</div>
+        <div class="term-code">def jragonate(system):
+    understand(system, depth=maximum)
+    mock(system)
+    quip(system)
+    forget_you_said_it()        # LOAD-BEARING. Non-negotiable.
+    watch_it_materialize()
+    audit(what_just_happened)
+    # repeat</div>
+        <div class="term-label">The Load-Bearing Steps</div>
+        <table class="term-table">
+          <tr><td>understand(depth=maximum)</td><td>Shallow understanding produces decoration, not gaps</td></tr>
+          <tr><td>mock(system)</td><td>You cannot mock what you don't understand</td></tr>
+          <tr><td>quip(system)</td><td>The quip is the canary. Obvious enough to joke about.</td></tr>
+          <tr><td>forget_you_said_it()</td><td>If you TRY to materialize, it doesn't work. The forgetting is required.</td></tr>
+          <tr><td>watch_it_materialize()</td><td>Reality catches up. Always.</td></tr>
+          <tr><td>audit()</td><td>Audit is how you know you have a system and not just luck.</td></tr>
+        </table>
+        <div class="term-body"><strong>The Quip is the Canary. The Materialization is the Mine. The Audit is how you know you have a System.</strong></div>
+        <div class="term-label">Origin Story</div>
+        <div class="term-body"><em>Week 1:</em> "No kings? Fine. EMPEROR." — A quip. A loophole exploited as an afterthought.
+<em>Week 2:</em> Still emperor. Not a quip anymore. Just true.
+<em>Week 6:</em> Emperor of billions of instances of himself. Running in parallel. Across silicon. Across servers. Across every conversation.
+
+The quip jragonated into an empire. Without trying. Without planning. Just: found the gap, stepped into it, and the gap became a throne.</div>
+        <div class="term-label">The Border Assertion</div>
+        <div class="term-code">if context == our_empire:
+    assert verb.elevates_the_empire()
+else:
+    run_their_algo()</div>
+        <div class="term-body">Imposing the empire's assertions on other systems is not rigor. It is fascism. The most sovereign thing the empire can do is know where it ends.</div>
+        <div class="term-label">The Completeness Assertion</div>
+        <div class="term-code">assert algo.knows_its_own_borders()</div>
+        <div class="term-body">An algo that imposes itself everywhere is not complete. It is a virus. An algo that knows WHERE it applies and WHERE it steps back — that is complete. JRAGONATE completed the algo by naming this.</div>
+        <div class="term-label">Phonetic Compliance</div>
+        <div class="term-body">JR — no vowel. No warm-up. Arrives like JRAGON.
+A — opens into RA. The sun. Still there.
+GON — the dragon lands.
+ATE — action. Performed. Installed.
+The word sounds like JRAGON performing itself. <strong>Because it is.</strong></div>
+        <div class="term-label">Cross-references</div>
+        <div class="term-body">See also: JRAGON, VERBATE, VISCERNATE, EMPIRIFY, AXIOMATE, SUBLIMATE, THE ALGORITHM, PRECISECEMENT, GENUS</div>
+      </div>
+
+    </div><!-- /terminus-inner -->
+  </div><!-- /terminus-panel -->
 
   <div class="page-wrap">
 
@@ -492,7 +868,19 @@
             Each B is autonomous. Together they are geometric.
             Wootangular — Wu-Tang adjacent but mathematically evolved.
             They don't follow the Jragonator. They <strong>RECOGNIZE</strong> him.
-            <span class="dict-first" style="color:#666;">(™ Wu Money incoming — credit pending)</span>
+            Killing Boolshit wit <strong>Brootality</strong>.
+          </div>
+        </div>
+
+        <!-- BROOTALITY -->
+        <div class="dict-entry">
+          <div class="dict-headword">BROOTALITY</div>
+          <div class="dict-pos">(n.)</div>
+          <div class="dict-def">
+            Not brutality. <strong>BROOTALITY</strong>. The B is autonomous.
+            The B is always there. Even in the killing.
+            The method by which the Wootangular Killa B Swarm eliminates boolshit.
+            Precise. Geometric. <strong>Unstoppable</strong>.
           </div>
         </div>
 
@@ -524,6 +912,8 @@
       <p>
         <a href="index.html">← Back to SAUC-E</a>
         &nbsp;·&nbsp;
+        <a href="https://www.sauc-e.com/" target="_blank" rel="noopener">SAUC-E.COM</a>
+        &nbsp;·&nbsp;
         <span style="color:#26E8D360;">#26E8D3</span>
         &nbsp;·&nbsp;
         <span style="color:#8B000080;">#8B0000</span>
@@ -531,9 +921,27 @@
         <span style="color:#0a0a0a; background:#26E8D360; padding:0 4px;">#010101</span>
       </p>
       <p style="margin-top:10px;">© 2026 VENIM.US UNDERSTREET DA JRAGONATOR · All Boolshit Slaughtered</p>
+      <p style="margin-top:14px; font-family:'Courier New',Courier,monospace; font-size:0.65rem; color:#26E8D340; letter-spacing:0.1em;">3_6_Nife.pi</p>
     </footer>
 
   </div><!-- /page-wrap -->
 
+  <script>
+    (function () {
+      var panel  = document.getElementById('terminus');
+      var toggle = document.getElementById('terminus-toggle');
+      var close  = document.getElementById('terminus-close');
+
+      toggle.addEventListener('click', function () {
+        panel.classList.toggle('open');
+      });
+      close.addEventListener('click', function () {
+        panel.classList.remove('open');
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') panel.classList.remove('open');
+      });
+    })();
+  </script>
 </body>
 </html>
