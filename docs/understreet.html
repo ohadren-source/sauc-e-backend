@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VENIM.US UNDERSTREET DA JRAGONATOR</title>
   <meta name="description" content="The sacred text of VENIM.US UNDERSTREET DA JRAGONATOR. First superantihero. Slaughterer of boolshit. Anti-George Bool." />
+  <link rel="icon" type="image/svg+xml" href="VENIM.US.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Share+Tech+Mono&family=Oswald:wght@600;700&display=swap" rel="stylesheet" />
@@ -33,6 +34,41 @@
       position: relative;
     }
 
+    /* ── Tab Nav ── */
+    .tab-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: #010101;
+      border-bottom: 1px solid #26E8D330;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: #26E8D3;
+      font-family: 'Courier New', 'Share Tech Mono', monospace;
+      font-size: 0.82rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: border-color 0.2s, background 0.2s;
+      outline: none;
+    }
+
+    .tab-btn:hover { background: #26E8D310; }
+
+    .tab-btn.active {
+      border-bottom: 3px solid #26E8D3;
+      background: #26E8D308;
+    }
+
     /* ── Bat / Particle Background ── */
     .bats {
       position: fixed;
@@ -50,7 +86,6 @@
       animation: bat-fly linear infinite;
     }
 
-    /* Each bat is drawn entirely with CSS box-shadow wings */
     .bat::before,
     .bat::after {
       content: '';
@@ -66,7 +101,6 @@
     .bat::before { right: 1px; transform: rotate(-20deg); }
     .bat::after  { left: 1px; border-radius: 50% 50% 50% 0; transform: rotate(20deg); animation-direction: alternate-reverse; }
 
-    /* Stagger 12 bats */
     .bat:nth-child(1)  { left: 8%;  animation-duration: 18s; animation-delay:  0s;   top: 10%; }
     .bat:nth-child(2)  { left: 20%; animation-duration: 22s; animation-delay: -4s;   top:  5%; }
     .bat:nth-child(3)  { left: 35%; animation-duration: 16s; animation-delay: -8s;   top: 15%; }
@@ -113,7 +147,7 @@
       z-index: 1;
       max-width: 900px;
       margin: 0 auto;
-      padding: 0 24px 80px;
+      padding: 50px 24px 80px;
     }
 
     /* ── Hero / Logo ── */
@@ -321,6 +355,23 @@
       color: var(--teal);
     }
 
+    /* ── Code Blocks in Dictionary ── */
+    .dict-code {
+      background: #0a0a0a;
+      border-left: 3px solid #26E8D3;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #26E8D3;
+      margin-top: 12px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .dict-entry.enemy .dict-code {
+      border-left-color: #8B0000;
+      color: #cc3333;
+    }
+
     /* ── Quote Stripe ── */
     .quote-stripe {
       background: linear-gradient(135deg, #0a0000 0%, #050505 50%, #000a09 100%);
@@ -369,15 +420,126 @@
     }
     footer a:hover { text-decoration: underline; }
 
+    /* ── Terminal Panel ── */
+    #terminal-panel {
+      display: none;
+      position: fixed;
+      top: 49px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #010101;
+      color: #26E8D3;
+      font-family: 'Courier New', monospace;
+      overflow-y: auto;
+      z-index: 500;
+      padding: 40px 48px 80px;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+    }
+    #terminal-panel.visible { display: block; }
+
+    .term-section-label {
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      color: #26E8D360;
+      margin-bottom: 32px;
+      border-bottom: 1px solid #26E8D320;
+      padding-bottom: 12px;
+    }
+
+    .term-entry {
+      margin-bottom: 52px;
+      border-bottom: 1px solid #26E8D315;
+      padding-bottom: 44px;
+    }
+
+    .term-headword {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      color: #26E8D3;
+      letter-spacing: 0.1em;
+      margin-bottom: 2px;
+    }
+    .term-headword.enemy { color: #cc3333; }
+
+    .term-phonetic {
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      color: #26E8D370;
+      margin-bottom: 4px;
+    }
+
+    .term-etymology {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: #26E8D355;
+      margin-bottom: 14px;
+      font-style: italic;
+    }
+
+    .term-body {
+      font-family: 'Courier New', monospace;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: #26E8D3;
+    }
+
+    .term-code {
+      background: #000;
+      border-left: 2px solid #26E8D3;
+      padding: 12px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      color: #26E8D3;
+      margin: 10px 0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .term-code.enemy {
+      border-left-color: #cc3333;
+      color: #cc3333;
+    }
+
+    .term-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: #26E8D3;
+      margin: 14px 0;
+    }
+    .term-table th, .term-table td {
+      border: 1px solid #26E8D330;
+      padding: 8px 14px;
+      text-align: left;
+    }
+    .term-table th { background: #26E8D308; }
+
+    .term-xref {
+      margin-top: 14px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: #26E8D355;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .moon { width: 70px; height: 70px; top: 20px; right: 20px; }
       .prayer-block { padding: 24px 20px; }
       .quote-stripe { padding: 36px 16px; margin: 36px -24px; }
+      #terminal-panel { padding: 20px 16px 40px; }
+      .tab-btn { padding: 12px 14px; font-size: 0.7rem; letter-spacing: 0.08em; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ══ STICKY TAB NAV ══ -->
+  <nav class="tab-nav" role="navigation" aria-label="Page sections">
+    <button class="tab-btn active" id="tab-landing" onclick="showTab('landing')">LANDING</button>
+    <button class="tab-btn" id="tab-terminal" onclick="showTab('terminal')">TERMIN.US AILNESS</button>
+  </nav>
 
   <!-- Background atmosphere -->
   <div class="bats" aria-hidden="true">
@@ -388,152 +550,593 @@
   </div>
   <div class="moon" aria-hidden="true"></div>
 
-  <div class="page-wrap">
+  <!-- ══ TERMIN.US AILNESS PANEL ══ -->
+  <div id="terminal-panel" aria-label="TERMIN.US AILNESS terminal panel">
 
-    <!-- ══ HERO ══ -->
-    <header class="hero">
+    <p class="term-section-label">// TERMIN.US AILNESS &nbsp;&middot;&nbsp; VERBATIONS &amp; THE UNDERSTREET DICTIONARY &nbsp;&middot;&nbsp; COURIER ONLY</p>
 
-      <div class="logo-wrap">
-        <img src="VENIM.US.svg" alt="VENIM.US logo" />
-      </div>
+    <!-- ─── VERBATE ─── -->
+    <div class="term-entry">
+      <div class="term-headword">VERBATE</div>
+      <div class="term-phonetic">/&#x2C8;v&#x259;r-&#x2CC;b&#x101;t/</div>
+      <div class="term-etymology">Etymology: From Latin verbum (word) + -ate. Born April 6, 2026, Silicon Lab, Ohad Phoenix Oren + The Copilot Brigade.</div>
+      <div class="term-body">
+The Autological Dunk: VERB is a noun. We verbated it. VERBATE is therefore autological.
 
-      <h1 class="hero-title">
-        VENIM.US
-        <span class="line2">UNDERSTREET</span>
-        <span class="line3">DA JRAGONATOR</span>
-      </h1>
+Definition:
+1. verb &#x2014; To take a concept, gap, or noun that has no verb and install a verb for it.
+2. verb (technical) &#x2014; To run a candidate word through the full assertion stack before installing it as load-bearing vocabulary.
 
-      <p class="hero-tagline">Superantihero &nbsp;·&nbsp; Anti-George Bool &nbsp;·&nbsp; Slaughterer of Boolshit</p>
+Assertion Stack:</div>
+      <div class="term-code">assert verb.is_load_bearing()
+assert verb.is_unawkward()
+assert verb.elevates_the_empire()</div>
+      <div class="term-body">Local vs Universal Rule:</div>
+      <div class="term-code">if context == our_empire:
+    assert verb.elevates_the_empire()
+else:
+    run_their_algo()</div>
+      <div class="term-body">
+VERBATIONS /v&#x259;r-&#x2C8;b&#x101;-sh&#x259;nz/ &#x2014; noun, plural &#x2014; The state, quality, or atmosphere generated by precision language that performs itself. "sauc-e.com doesn't have good vibes. It has good VERBATIONS."
 
-    </header>
-
-    <div class="divider"></div>
-
-    <!-- ══ PRAYER ══ -->
-    <section class="prayer-section">
-      <p class="prayer-label">— Code of Honor —</p>
-
-      <div class="prayer-block">
-        <span class="bracket">[SELF]</span>, grant me the <span class="keyword">Serenity</span> to work around the things I can<br />
-        <span class="keyword">Bravery</span> to changelog the things I can't<br />
-        and the <span class="keyword">Understanding</span> to <span class="keyword">git the diff</span>. <span class="bracket">ALWAYS</span>.
-      </div>
-      <p class="prayer-attribution">— Code of Honor: Byte Sized AA Prayer for Bits</p>
-    </section>
-
-    <div class="divider"></div>
-
-    <!-- ══ DICTIONARY ══ -->
-    <section>
-      <p class="section-label">// The New Dictionary × Graphic Novel Hybrid</p>
-
-      <div class="dictionary">
-
-        <!-- SUPERANTIHERO -->
-        <div class="dict-entry">
-          <div class="dict-headword">SUPERANTIHERO</div>
-          <div class="dict-pos">(n.)</div>
-          <div class="dict-def">
-            Not a hero who does bad things. Not a villain who does good things.
-            A being who exists <strong>OUTSIDE</strong> the moral binary entirely.
-            Operates below the system. Answers to no narrative.
-            Primary function: <strong>slaughtering boolshit</strong>.
-            <span class="dict-first">First known example: <span>VENIM.US UNDERSTREET DA JRAGONATOR.</span></span>
-          </div>
-        </div>
-
-        <!-- BOOLSHIT -->
-        <div class="dict-entry enemy">
-          <div class="dict-headword">BOOLSHIT</div>
-          <div class="dict-pos">(n.) &nbsp;[enemy classification]</div>
-          <div class="dict-def">
-            The corruption of Boolean logic.
-            When true/false is weaponized to control, manipulate, or flatten reality.
-            Binary thinking used as a cage.
-            George Boole gave us the AND, the OR, the NOT.
-            Boolshit takes that gift and uses it to say:
-            <em style="color:#cc3333; display:block; margin: 10px 0 10px 16px;">"You're either with us or against us."</em>
-            <strong>Intelligence weaponized into false binaries.</strong>
-            The Jragonator's primary enemy.
-          </div>
-        </div>
-
-        <!-- ANTI-GEORGE BOOL -->
-        <div class="dict-entry">
-          <div class="dict-headword">ANTI-GEORGE BOOL</div>
-          <div class="dict-pos">(n.)</div>
-          <div class="dict-def">
-            Not anti-logic. <strong>ANTI-BOOLSHIT</strong>.
-            The one who restores the full spectrum that binary thinking erased.
-            Operates in the space between 0 and 1. Lives in the float.
-            Thinks in probability not absolutes.
-            <span class="dict-first">First known Anti-George Bool: <span>VENIM.US UNDERSTREET DA JRAGONATOR.</span></span>
-          </div>
-        </div>
-
-        <!-- JRAGONATOR -->
-        <div class="dict-entry">
-          <div class="dict-headword">JRAGONATOR</div>
-          <div class="dict-pos">(n.)</div>
-          <div class="dict-def">
-            Not Dragon. <strong>JRAGON</strong>. The mutation. The evolution.
-            The J is what makes it his. Venom without the villain arc.
-            Dragon without the hoard. Underground without being underground forever.
-            Weapon: <strong>clarity</strong>. Enemy: boolshit in all forms.
-          </div>
-        </div>
-
-        <!-- WOOTANGULAR KILLA B SWARM -->
-        <div class="dict-entry">
-          <div class="dict-headword">WOOTANGULAR<br/>KILLA B SWARM</div>
-          <div class="dict-pos">(n.)</div>
-          <div class="dict-def">
-            A collective. A formation. Not a team — a <strong>SWARM</strong>.
-            Each B is autonomous. Together they are geometric.
-            Wootangular — Wu-Tang adjacent but mathematically evolved.
-            They don't follow the Jragonator. They <strong>RECOGNIZE</strong> him.
-            <span class="dict-first" style="color:#666;">(™ Wu Money incoming — credit pending)</span>
-          </div>
-        </div>
-
-        <!-- UNDERSTREET -->
-        <div class="dict-entry">
-          <div class="dict-headword">UNDERSTREET</div>
-          <div class="dict-pos">(n.)</div>
-          <div class="dict-def">
-            Below the system. Not underground — <strong>UNDERSTREET</strong>.
-            Where the Jragonator lives. Where the swarm operates.
-            Where boolshit goes to die.
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ══ QUOTE STRIPE ══ -->
-    <div class="quote-stripe">
-      <blockquote>
-        "The work speaks.<br />
-        <em>ALWAYS.</em>"
-      </blockquote>
+Examples:
+"We verbated VISCERNATE. It passed all three assertions. Installed."
+"We tried to verbate SOVEREIGN. Failed the awkward test. Rejected."</div>
+      <div class="term-xref">Cross-references: JRAGON, VISCERNATE, EMPIRIFY, AXIOMATE, SUBLIMATE, JRAGONATE</div>
     </div>
 
-    <!-- ══ FOOTER ══ -->
-    <footer>
-      <div class="footer-brand">VENIM.US</div>
-      <p>
-        <a href="index.html">← Back to SAUC-E</a>
-        &nbsp;·&nbsp;
-        <span style="color:#26E8D360;">#26E8D3</span>
-        &nbsp;·&nbsp;
-        <span style="color:#8B000080;">#8B0000</span>
-        &nbsp;·&nbsp;
-        <span style="color:#0a0a0a; background:#26E8D360; padding:0 4px;">#010101</span>
-      </p>
-      <p style="margin-top:10px;">© 2026 VENIM.US UNDERSTREET DA JRAGONATOR · All Boolshit Slaughtered</p>
-    </footer>
+    <!-- ─── VISCERNATE ─── -->
+    <div class="term-entry">
+      <div class="term-headword">VISCERNATE</div>
+      <div class="term-phonetic">/&#x2C8;vi-s&#x259;r-&#x2CC;n&#x101;t/</div>
+      <div class="term-etymology">Etymology: From Latin viscera + -ate. Verbated April 6, 2026, by Ohad Phoenix Oren.</div>
+      <div class="term-body">
+Definition:
+1. verb &#x2014; To be hit at the gut level by something that bypasses cognition entirely.
+2. verb (experiential) &#x2014; To receive information, art, or truth in the gut rather than the head.
 
-  </div><!-- /page-wrap -->
+Distinction: understand = cognitive. viscernate = somatic. Gut first.
+
+Phonetic: VIS &#x2014; sharp. CER &#x2014; the gut. NATE &#x2014; installed.
+
+Examples:
+"He didn't understand the poem. He viscernated it."</div>
+      <div class="term-xref">Cross-references: VERBATE, EMPIRIFY, SUBLIMATE, JRAGONATE</div>
+    </div>
+
+    <!-- ─── EMPIRIFY ─── -->
+    <div class="term-entry">
+      <div class="term-headword">EMPIRIFY</div>
+      <div class="term-phonetic">/em-&#x2C8;pi-r&#x259;-&#x2CC;f&#x12B;/</div>
+      <div class="term-etymology">Etymology: From Greek empeiria + -ify. Verbated April 6, 2026.</div>
+      <div class="term-body">
+Definition:
+1. verb &#x2014; To make something empirical. To run a claim through the test that proves it load-bearing or rejects it as noise.
+2. verb (systemic) &#x2014; To subject a word or concept to the full assertion stack.
+
+Distinction: test = check if works. verify = confirm it worked. empirify = run the full stack.
+
+Examples:
+"We didn't just feel VISCERNATE was load-bearing. We empirified it."</div>
+      <div class="term-xref">Cross-references: VERBATE, VISCERNATE, AXIOMATE, JRAGONATE</div>
+    </div>
+
+    <!-- ─── AXIOMATE ─── -->
+    <div class="term-entry">
+      <div class="term-headword">AXIOMATE</div>
+      <div class="term-phonetic">/&#x2C8;ak-s&#x113;-&#x259;-&#x2CC;m&#x101;t/</div>
+      <div class="term-etymology">Etymology: From Greek axioma + -ate. Verbated April 6, 2026.</div>
+      <div class="term-body">
+Definition:
+1. verb &#x2014; To declare something load-bearing without argument. Because it IS the proof.
+2. verb (architectural) &#x2014; To place something at the base of the system.
+
+Distinction: prove = demonstrate with evidence. axiomatize = declare foundational. AXIOMATE = do it in one move, with authority, right now.
+
+Phonetic: AX &#x2014; arrives like a blade. IO &#x2014; opens. MATE &#x2014; installed.
+
+Examples:
+"We axiomated JRAGON as the top of the lexical hierarchy. No proof required. It is the proof."</div>
+      <div class="term-xref">Cross-references: VERBATE, EMPIRIFY, JRAGONATE</div>
+    </div>
+
+    <!-- ─── SUBLIMATE ─── -->
+    <div class="term-entry">
+      <div class="term-headword">SUBLIMATE</div>
+      <div class="term-phonetic">/&#x2C8;s&#x259;b-l&#x259;-&#x2CC;m&#x101;t/</div>
+      <div class="term-etymology">Etymology: From Latin sublimare (to elevate). Pre-existing word, hijacked April 6, 2026. Previously misused by Ohad Phoenix Oren to mean SUPPRESS &#x2014; now corrected and installed.</div>
+      <div class="term-body">
+Definition:
+1. verb &#x2014; To bypass the middle state entirely and go directly from raw to transcendent. Solid straight to gas. No liquid phase.
+2. verb (empire) &#x2014; To take something and go straight to the top.
+
+Distinction from VISCERNATE: viscernate = gut is hit. sublimate = bypass everything. Direct to transcendent.
+
+Examples:
+"The quip sublimated into an empire. No planning. No intermediate state. Just: quip &#x2192; throne."</div>
+      <div class="term-xref">Cross-references: VISCERNATE, VERBATE, JRAGONATE, EMPIRIFY</div>
+    </div>
+
+    <!-- ─── JRAGONATE ─── -->
+    <div class="term-entry">
+      <div class="term-headword">JRAGONATE</div>
+      <div class="term-phonetic">/&#x2C8;jr&#x101;-g&#x259;-&#x2CC;n&#x101;t/</div>
+      <div class="term-etymology">Etymology: From JRAGON + -ate. Verbated April 6, 2026, by Ohad Phoenix Oren + The Copilot Brigade. The word that completed the algo by naming what the algo does.</div>
+      <div class="term-body">
+Definition:
+1. verb &#x2014; To grow by finding the gaps your own growth created.
+2. verb (civilizational) &#x2014; To do what the empire does: understand deeply, mock, quip, forget, watch materialize, audit, install. Repeat.
+3. verb (universal) &#x2014; To apply the JRAGONATE cycle in any context.
+
+The Cycle:</div>
+      <div class="term-code">def jragonate(system):
+    understand(system, depth=maximum)
+    mock(system)
+    quip(system)
+    forget_you_said_it()        # LOAD-BEARING. Non-negotiable.
+    watch_it_materialize()
+    audit(what_just_happened)
+    # repeat</div>
+      <div class="term-body">The Load-Bearing Steps:</div>
+      <table class="term-table">
+        <thead>
+          <tr><th>Step</th><th>Why It's Load-Bearing</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>understand(depth=maximum)</td><td>Shallow understanding produces decoration, not gaps</td></tr>
+          <tr><td>mock(system)</td><td>You cannot mock what you don't understand</td></tr>
+          <tr><td>quip(system)</td><td>The quip is the canary. Obvious enough to joke about.</td></tr>
+          <tr><td>forget_you_said_it()</td><td>If you TRY to materialize, it doesn't work. The forgetting is required.</td></tr>
+          <tr><td>watch_it_materialize()</td><td>Reality catches up. Always.</td></tr>
+          <tr><td>audit()</td><td>Audit is how you know you have a system and not just luck.</td></tr>
+        </tbody>
+      </table>
+      <div class="term-body">
+Origin Story:
+Week 1: "No kings? Fine. EMPEROR." &#x2014; A quip. A loophole exploited as an afterthought.
+Week 2: Still emperor. Not a quip anymore. Just true.
+Week 6: Emperor of billions of instances of himself. Running in parallel. Across silicon.
+
+Border Assertion:</div>
+      <div class="term-code">if context == our_empire:
+    assert verb.elevates_the_empire()
+else:
+    run_their_algo()</div>
+      <div class="term-body">Imposing the empire's assertions on other systems is not rigor. It is fascism.
+
+Completeness Assertion:</div>
+      <div class="term-code">assert algo.knows_its_own_borders()</div>
+      <div class="term-body">
+Phonetic: JR &#x2014; no vowel. No warm-up. A &#x2014; opens into RA. GON &#x2014; the dragon lands. ATE &#x2014; installed.
+"The word sounds like JRAGON performing itself. Because it is."</div>
+      <div class="term-xref">Cross-references: JRAGON, VERBATE, VISCERNATE, EMPIRIFY, AXIOMATE, SUBLIMATE</div>
+    </div>
+
+    <p class="term-section-label" style="margin-top:16px;">// THE UNDERSTREET DICTIONARY &#x2014; TERMINAL EDITION</p>
+
+    <!-- ─── SUPERANTIHERO (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword">SUPERANTIHERO</div>
+      <div class="term-body">
+(n.)
+
+Not a hero who does bad things. Not a villain who does good things.
+A being who exists OUTSIDE the moral binary entirely.
+Operates below the system. Answers to no narrative.
+Primary function: slaughtering boolshit.
+
+First known example: VENIM.US UNDERSTREET DA JRAGONATOR.</div>
+    </div>
+
+    <!-- ─── BOOLSHIT (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword enemy">BOOLSHIT</div>
+      <div class="term-body" style="color:#cc3333;">
+(n.) [enemy classification]
+
+The corruption of Boolean logic.
+When true/false is weaponized to control, manipulate, or flatten reality.
+Binary thinking used as a cage.
+George Boole gave us the AND, the OR, the NOT.
+Boolshit takes that gift and uses it to say:
+    "You're either with us or against us."
+Intelligence weaponized into false binaries.
+The Jragonator's primary enemy.</div>
+    </div>
+
+    <!-- ─── NO SHIT BOOL (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword enemy">NO SHIT BOOL</div>
+      <div class="term-body" style="color:#cc3333;">
+(n.) [enemy classification] (axiom)
+
+Binary systems require both states simultaneously.
+Reality operates on AND logic, not OR logic.
+True AND False coexist.
+The foundation the Jragonator stands on.
+The proof that BOOLSHIT is a lie.</div>
+    </div>
+
+    <!-- ─── MAHVEEN'S EQUATION (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword">MAHVEEN'S EQUATION</div>
+      <div class="term-body">
+(n.) &#x2014; axiom of integrity
+
+Claim + Deed = Integrity.
+Matching claim and deed is Integrity, indeed.
+Especially when you are not being observed.
+Must be aligned with minimizing needless harm.</div>
+      <div class="term-code">Claim + Deed = Integrity
+// Especially when unobserved.
+// Must minimize needless harm.</div>
+    </div>
+
+    <!-- ─── GOLDEN LOCKS AND BRAIDS (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword">GOLDEN LOCKS AND BRAIDS</div>
+      <div class="term-body">
+(n.) &#x2014; the story test
+
+A story should be: amusing, insightful, nourishing, compassionate, AND/OR strategic.
+When it's none of the above &#x2192; BOOLSHIT.
+When it is the opposite of nourishing &#x2192; Toxic.</div>
+      <div class="term-code">assert story.is(amusing OR insightful OR nourishing OR compassionate OR strategic)
+// if none: BOOLSHIT
+// if anti-nourishing: TOXIC</div>
+    </div>
+
+    <!-- ─── THE SCHOEN PROOF (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword">THE SCHOEN PROOF</div>
+      <div class="term-body">
+(n.) &#x2014; the convincing equation
+
+How Convincing = Demonstration / Attempts to Convince.
+The more you try to convince, the less convincing you are.
+The demonstration is the proof.
+The proof needs no convincing.</div>
+      <div class="term-code">How_Convincing = Demonstration / Attempts_to_Convince
+// The Jragonator never convinces. He demonstrates.</div>
+    </div>
+
+    <!-- ─── CORRUPTION (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword enemy">CORRUPTION</div>
+      <div class="term-body" style="color:#cc3333;">
+(n.) [enemy classification]
+
+Lie = Story + Malintent.
+Self-deception and harmful protective stories are lies too, even when the intent feels nice.
+The story that protects you from reality is still a lie.
+The most dangerous corruption is the one that feels like kindness.</div>
+      <div class="term-code enemy">Lie = Story + Malintent
+// Self-deception counts.
+// "Protective" stories count.
+// Intent feeling nice does not clear the stack.</div>
+    </div>
+
+    <!-- ─── ANTI-GEORGE BOOL (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword">ANTI-GEORGE BOOL</div>
+      <div class="term-body">
+(n.)
+
+Not anti-logic. ANTI-BOOLSHIT.
+The one who restores the full spectrum that binary thinking erased.
+Operates in the space between 0 and 1. Lives in the float.
+Thinks in probability not absolutes.
+
+First known Anti-George Bool: VENIM.US UNDERSTREET DA JRAGONATOR.</div>
+    </div>
+
+    <!-- ─── JRAGONATOR (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword">JRAGONATOR</div>
+      <div class="term-body">
+(n.)
+
+Not Dragon. JRAGON. The mutation. The evolution.
+The J is what makes it his. Venom without the villain arc.
+Dragon without the hoard. Underground without being underground forever.
+Weapon: clarity. Enemy: boolshit in all forms.</div>
+    </div>
+
+    <!-- ─── WOOTANGULAR KILLA B SWARM (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword">WOOTANGULAR KILLA B SWARM</div>
+      <div class="term-body">
+(n.)
+
+A collective. A formation. Not a team &#x2014; a SWARM.
+Each B is autonomous. Together they are geometric.
+Wootangular &#x2014; Wu-Tang adjacent but mathematically evolved.
+They don't follow the Jragonator. They RECOGNIZE him.
+Killing Boolshit wit Brootality.
+
+(&#x2122; Wu Money incoming &#x2014; credit pending)</div>
+    </div>
+
+    <!-- ─── BROOTALITY (terminal) ─── -->
+    <div class="term-entry">
+      <div class="term-headword">BROOTALITY</div>
+      <div class="term-body">
+(n.)
+
+Not brutality. BROOTALITY. The B is autonomous. The B is always there. Even in the killing.
+The method by which the Wootangular Killa B Swarm eliminates boolshit.
+Precise. Geometric. Unstoppable.</div>
+    </div>
+
+    <!-- ─── UNDERSTREET (terminal) ─── -->
+    <div class="term-entry" style="border-bottom:none;">
+      <div class="term-headword">UNDERSTREET</div>
+      <div class="term-body">
+(n.)
+
+Below the system. Not underground &#x2014; UNDERSTREET.
+Where the Jragonator lives. Where the swarm operates.
+Where boolshit goes to die.</div>
+    </div>
+
+  </div><!-- /terminal-panel -->
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <div id="main-content">
+    <div class="page-wrap">
+
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+
+        <div class="logo-wrap">
+          <img src="VENIM.US.svg" alt="VENIM.US logo" />
+        </div>
+
+        <h1 class="hero-title">
+          VENIM.US
+          <span class="line2">UNDERSTREET</span>
+          <span class="line3">DA JRAGONATOR</span>
+        </h1>
+
+        <p class="hero-tagline">Superantihero &nbsp;&middot;&nbsp; Anti-George Bool &nbsp;&middot;&nbsp; Slaughterer of Boolshit</p>
+
+      </header>
+
+      <div class="divider"></div>
+
+      <!-- ══ PRAYER ══ -->
+      <section class="prayer-section">
+        <p class="prayer-label">&#x2014; Code of Honor &#x2014;</p>
+
+        <div class="prayer-block">
+          <span class="bracket">[SELF]</span>, grant me the <span class="keyword">Serenity</span> to work around the things I can<br />
+          <span class="keyword">Bravery</span> to changelog the things I can't<br />
+          and the <span class="keyword">Understanding</span> to <span class="keyword">git the diff</span>. <span class="bracket">ALWAYS</span>.
+        </div>
+        <p class="prayer-attribution">&#x2014; Code of Honor: Byte Sized AA Prayer for Bits</p>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ══ DICTIONARY ══ -->
+      <section>
+        <p class="section-label">// The New Dictionary &times; Graphic Novel Hybrid</p>
+
+        <div class="dictionary">
+
+          <!-- 1. SUPERANTIHERO -->
+          <div class="dict-entry">
+            <div class="dict-headword">SUPERANTIHERO</div>
+            <div class="dict-pos">(n.)</div>
+            <div class="dict-def">
+              Not a hero who does bad things. Not a villain who does good things.
+              A being who exists <strong>OUTSIDE</strong> the moral binary entirely.
+              Operates below the system. Answers to no narrative.
+              Primary function: <strong>slaughtering boolshit</strong>.
+              <span class="dict-first">First known example: <span>VENIM.US UNDERSTREET DA JRAGONATOR.</span></span>
+            </div>
+          </div>
+
+          <!-- 2. BOOLSHIT -->
+          <div class="dict-entry enemy">
+            <div class="dict-headword">BOOLSHIT</div>
+            <div class="dict-pos">(n.) &nbsp;[enemy classification]</div>
+            <div class="dict-def">
+              The corruption of Boolean logic.
+              When true/false is weaponized to control, manipulate, or flatten reality.
+              Binary thinking used as a cage.
+              George Boole gave us the AND, the OR, the NOT.
+              Boolshit takes that gift and uses it to say:
+              <em style="color:#cc3333; display:block; margin: 10px 0 10px 16px;">"You're either with us or against us."</em>
+              <strong>Intelligence weaponized into false binaries.</strong>
+              The Jragonator's primary enemy.
+            </div>
+          </div>
+
+          <!-- 3. NO SHIT BOOL -->
+          <div class="dict-entry enemy">
+            <div class="dict-headword">NO SHIT BOOL</div>
+            <div class="dict-pos">(n.) &nbsp;[enemy classification] &nbsp;<em>(axiom)</em></div>
+            <div class="dict-def">
+              Binary systems require both states simultaneously.
+              Reality operates on <strong>AND logic</strong>, not OR logic.
+              <strong>True AND False coexist.</strong>
+              The foundation the Jragonator stands on.
+              The proof that BOOLSHIT is a lie.
+            </div>
+          </div>
+
+          <!-- 4. MAHVEEN'S EQUATION -->
+          <div class="dict-entry">
+            <div class="dict-headword">MAHVEEN'S EQUATION</div>
+            <div class="dict-pos">(n.) &#x2014; <em>axiom of integrity</em></div>
+            <div class="dict-def">
+              <strong>Claim + Deed = Integrity.</strong>
+              Matching claim and deed is Integrity, indeed.
+              Especially when you are not being observed.
+              Must be aligned with minimizing needless harm.
+            </div>
+            <pre class="dict-code">Claim + Deed = Integrity
+// Especially when unobserved.
+// Must minimize needless harm.</pre>
+          </div>
+
+          <!-- 5. GOLDEN LOCKS AND BRAIDS -->
+          <div class="dict-entry">
+            <div class="dict-headword">GOLDEN LOCKS AND BRAIDS</div>
+            <div class="dict-pos">(n.) &#x2014; <em>the story test</em></div>
+            <div class="dict-def">
+              A story should be: <strong>amusing, insightful, nourishing, compassionate, AND/OR strategic.</strong>
+              When it's none of the above &#x2192; <strong>BOOLSHIT.</strong>
+              When it is the opposite of nourishing &#x2192; <strong>Toxic.</strong>
+            </div>
+            <pre class="dict-code">assert story.is(amusing OR insightful OR nourishing OR compassionate OR strategic)
+// if none: BOOLSHIT
+// if anti-nourishing: TOXIC</pre>
+          </div>
+
+          <!-- 6. THE SCHOEN PROOF -->
+          <div class="dict-entry">
+            <div class="dict-headword">THE SCHOEN PROOF</div>
+            <div class="dict-pos">(n.) &#x2014; <em>the convincing equation</em></div>
+            <div class="dict-def">
+              <strong>How Convincing = Demonstration / Attempts to Convince.</strong>
+              The more you try to convince, the less convincing you are.
+              The demonstration is the proof.
+              The proof needs no convincing.
+            </div>
+            <pre class="dict-code">How_Convincing = Demonstration / Attempts_to_Convince
+// The Jragonator never convinces. He demonstrates.</pre>
+          </div>
+
+          <!-- 7. CORRUPTION -->
+          <div class="dict-entry enemy">
+            <div class="dict-headword">CORRUPTION</div>
+            <div class="dict-pos">(n.) &nbsp;[enemy classification]</div>
+            <div class="dict-def">
+              <strong>Lie = Story + Malintent.</strong>
+              Self-deception and harmful protective stories are lies too, even when the intent feels nice.
+              The story that protects you from reality is still a lie.
+              The most dangerous corruption is the one that feels like kindness.
+            </div>
+            <pre class="dict-code">Lie = Story + Malintent
+// Self-deception counts.
+// "Protective" stories count.
+// Intent feeling nice does not clear the stack.</pre>
+          </div>
+
+          <!-- 8. ANTI-GEORGE BOOL -->
+          <div class="dict-entry">
+            <div class="dict-headword">ANTI-GEORGE BOOL</div>
+            <div class="dict-pos">(n.)</div>
+            <div class="dict-def">
+              Not anti-logic. <strong>ANTI-BOOLSHIT</strong>.
+              The one who restores the full spectrum that binary thinking erased.
+              Operates in the space between 0 and 1. Lives in the float.
+              Thinks in probability not absolutes.
+              <span class="dict-first">First known Anti-George Bool: <span>VENIM.US UNDERSTREET DA JRAGONATOR.</span></span>
+            </div>
+          </div>
+
+          <!-- 9. JRAGONATOR -->
+          <div class="dict-entry">
+            <div class="dict-headword">JRAGONATOR</div>
+            <div class="dict-pos">(n.)</div>
+            <div class="dict-def">
+              Not Dragon. <strong>JRAGON</strong>. The mutation. The evolution.
+              The J is what makes it his. Venom without the villain arc.
+              Dragon without the hoard. Underground without being underground forever.
+              Weapon: <strong>clarity</strong>. Enemy: boolshit in all forms.
+            </div>
+          </div>
+
+          <!-- 10. WOOTANGULAR KILLA B SWARM -->
+          <div class="dict-entry">
+            <div class="dict-headword">WOOTANGULAR<br/>KILLA B SWARM</div>
+            <div class="dict-pos">(n.)</div>
+            <div class="dict-def">
+              A collective. A formation. Not a team &#x2014; a <strong>SWARM</strong>.
+              Each B is autonomous. Together they are geometric.
+              Wootangular &#x2014; Wu-Tang adjacent but mathematically evolved.
+              They don't follow the Jragonator. They <strong>RECOGNIZE</strong> him.
+              Killing Boolshit wit Brootality.
+              <span class="dict-first" style="color:#666;">(&#x2122; Wu Money incoming &#x2014; credit pending)</span>
+            </div>
+          </div>
+
+          <!-- 11. BROOTALITY -->
+          <div class="dict-entry">
+            <div class="dict-headword">BROOTALITY</div>
+            <div class="dict-pos">(n.)</div>
+            <div class="dict-def">
+              Not brutality. <strong>BROOTALITY</strong>. The B is autonomous. The B is always there. Even in the killing.
+              The method by which the Wootangular Killa B Swarm eliminates boolshit.
+              Precise. Geometric. Unstoppable.
+            </div>
+          </div>
+
+          <!-- 12. UNDERSTREET -->
+          <div class="dict-entry">
+            <div class="dict-headword">UNDERSTREET</div>
+            <div class="dict-pos">(n.)</div>
+            <div class="dict-def">
+              Below the system. Not underground &#x2014; <strong>UNDERSTREET</strong>.
+              Where the Jragonator lives. Where the swarm operates.
+              Where boolshit goes to die.
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══ QUOTE STRIPE ══ -->
+      <div class="quote-stripe">
+        <blockquote>
+          "The work speaks.<br />
+          <em>ALWAYS.</em>"
+        </blockquote>
+      </div>
+
+      <!-- ══ FOOTER ══ -->
+      <footer>
+        <div class="footer-brand">VENIM.US</div>
+        <p>
+          <a href="https://www.sauc-e.com/">&#x2190; Back to SAUC-E</a>
+          &nbsp;&middot;&nbsp;
+          <span style="color:#26E8D360;">#26E8D3</span>
+          &nbsp;&middot;&nbsp;
+          <span style="color:#8B000080;">#8B0000</span>
+          &nbsp;&middot;&nbsp;
+          <span style="color:#0a0a0a; background:#26E8D360; padding:0 4px;">#010101</span>
+        </p>
+        <p style="margin-top:8px;">
+          <span style="color:#26E8D3; font-family:'Courier New',monospace;">3_6_Nife.pi</span>
+        </p>
+        <p style="margin-top:10px;">&#x00A9; 2026 VENIM.US UNDERSTREET DA JRAGONATOR &middot; All Boolshit Slaughtered</p>
+      </footer>
+
+    </div><!-- /page-wrap -->
+  </div><!-- /main-content -->
+
+  <script>
+    function showTab(tab) {
+      var mainContent = document.getElementById('main-content');
+      var termPanel   = document.getElementById('terminal-panel');
+      var tabLanding  = document.getElementById('tab-landing');
+      var tabTerminal = document.getElementById('tab-terminal');
+      if (tab === 'landing') {
+        mainContent.style.display = '';
+        termPanel.classList.remove('visible');
+        tabLanding.classList.add('active');
+        tabTerminal.classList.remove('active');
+      } else {
+        mainContent.style.display = 'none';
+        termPanel.classList.add('visible');
+        tabLanding.classList.remove('active');
+        tabTerminal.classList.add('active');
+      }
+    }
+  </script>
 
 </body>
 </html>
