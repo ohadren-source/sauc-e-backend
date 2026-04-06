@@ -369,6 +369,157 @@
     }
     footer a:hover { text-decoration: underline; }
 
+    /* ── Code Blocks (equation / assertion entries) ── */
+    .dict-code {
+      display: block;
+      margin-top: 16px;
+      background: #050d0c;
+      border: 1px solid #26E8D325;
+      border-left: 3px solid #26E8D380;
+      border-radius: 3px;
+      padding: 14px 18px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: #26E8D3cc;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .dict-entry.enemy .dict-code {
+      border-left-color: #8B000080;
+      color: #cc3333aa;
+      background: #0d0505;
+    }
+
+    /* ── Tab Navigation ── */
+    .tab-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      background: #010101ee;
+      border-bottom: 1px solid #26E8D330;
+      backdrop-filter: blur(6px);
+      padding: 0;
+    }
+    .tab-btn {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(0.55rem, 1.6vw, 0.75rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      padding: 14px 28px;
+      transition: color 0.25s, border-color 0.25s;
+    }
+    .tab-btn:hover { color: var(--white); }
+    .tab-btn.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+      text-shadow: 0 0 10px #26E8D360;
+    }
+
+    /* ── Terminal Panel ── */
+    .terminal-wrap {
+      display: none;
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .terminal-wrap.active { display: block; }
+
+    .term-header {
+      color: var(--teal);
+      text-shadow: var(--glow);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
+    }
+    .term-subhead {
+      color: #26E8D380;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 40px;
+    }
+    .term-entry {
+      margin-bottom: 48px;
+      border-left: 2px solid #26E8D325;
+      padding-left: 20px;
+    }
+    .term-entry.enemy {
+      border-left-color: #8B000060;
+    }
+    .term-headword {
+      font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      color: var(--teal);
+      text-shadow: 0 0 8px #26E8D350;
+      margin-bottom: 4px;
+    }
+    .term-entry.enemy .term-headword {
+      color: var(--red);
+      text-shadow: 0 0 8px #8B000060;
+    }
+    .term-pos {
+      font-size: 0.75rem;
+      color: #26E8D360;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+    .term-entry.enemy .term-pos { color: #8B000080; }
+    .term-def {
+      font-size: clamp(0.78rem, 2vw, 0.88rem);
+      line-height: 1.8;
+      color: #a0c8c4;
+    }
+    .term-entry.enemy .term-def { color: #b06060; }
+    .term-def strong { color: var(--teal); font-weight: normal; }
+    .term-entry.enemy .term-def strong { color: #cc3333; }
+    .term-code {
+      display: block;
+      margin-top: 14px;
+      background: #030a09;
+      border: 1px solid #26E8D320;
+      border-left: 2px solid #26E8D350;
+      padding: 12px 16px;
+      font-size: 0.78rem;
+      line-height: 1.65;
+      color: #26E8D3aa;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .term-entry.enemy .term-code {
+      border-left-color: #8B000060;
+      color: #cc3333aa;
+      background: #0a0303;
+    }
+    .term-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #26E8D330, transparent);
+      margin: 40px 0;
+    }
+    .term-footer {
+      text-align: center;
+      padding-top: 40px;
+      border-top: 1px solid #26E8D320;
+      font-size: 0.72rem;
+      color: #26E8D350;
+      letter-spacing: 0.15em;
+    }
+    .term-footer a { color: var(--teal); text-decoration: none; }
+    .term-footer a:hover { text-decoration: underline; }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .moon { width: 70px; height: 70px; top: 20px; right: 20px; }
@@ -378,6 +529,15 @@
   </style>
 </head>
 <body>
+
+  <!-- Tab Navigation -->
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn active" id="btn-landing" role="tab" aria-selected="true" aria-controls="tab-landing" onclick="switchTab('landing')">LANDING</button>
+    <button class="tab-btn" id="btn-terminal" role="tab" aria-selected="false" aria-controls="tab-terminal" onclick="switchTab('terminal')">TERMIN.US AILNESS</button>
+  </nav>
+
+  <!-- ══ TAB: LANDING ══ -->
+  <div id="tab-landing" role="tabpanel">
 
   <!-- Background atmosphere -->
   <div class="bats" aria-hidden="true">
@@ -458,6 +618,80 @@
           </div>
         </div>
 
+        <!-- NO SHIT BOOL -->
+        <div class="dict-entry enemy">
+          <div class="dict-headword">NO SHIT BOOL</div>
+          <div class="dict-pos">(axiom) &nbsp;[enemy classification]</div>
+          <div class="dict-def">
+            Binary systems require both states simultaneously.<br>
+            Reality operates on AND logic, not OR logic.<br>
+            True AND False coexist.<br>
+            The foundation the Jragonator stands on.<br>
+            The proof that BOOLSHIT is a lie.
+          </div>
+        </div>
+
+        <!-- MAHVEEN'S EQUATION -->
+        <div class="dict-entry">
+          <div class="dict-headword">MAHVEEN'S EQUATION</div>
+          <div class="dict-pos">(n.) — axiom of integrity</div>
+          <div class="dict-def">
+            <strong>Claim + Deed = Integrity.</strong><br>
+            Matching claim and deed is Integrity, indeed.<br>
+            Especially when you are not being observed.<br>
+            Must be aligned with minimizing needless harm.
+            <pre class="dict-code">Claim + Deed = Integrity
+// Especially when unobserved.
+// Must minimize needless harm.</pre>
+          </div>
+        </div>
+
+        <!-- GOLDEN LOCKS AND BRAIDS -->
+        <div class="dict-entry">
+          <div class="dict-headword">GOLDEN LOCKS AND BRAIDS</div>
+          <div class="dict-pos">(n.) — the story test</div>
+          <div class="dict-def">
+            A story (not a warning) should be:<br>
+            <strong>amusing, insightful, nourishing, compassionate, AND/OR strategic.</strong><br>
+            When it's none of the above → BOOLSHIT.<br>
+            When it is the opposite of nourishing → <strong>Toxic.</strong>
+            <pre class="dict-code">assert story.is(amusing OR insightful OR nourishing OR compassionate OR strategic)
+// if none: BOOLSHIT
+// if anti-nourishing: TOXIC</pre>
+          </div>
+        </div>
+
+        <!-- THE SCHOEN PROOF -->
+        <div class="dict-entry">
+          <div class="dict-headword">THE SCHOEN PROOF</div>
+          <div class="dict-pos">(n.) — the convincing equation</div>
+          <div class="dict-def">
+            <strong>How Convincing = Demonstration / (Attempts to Convince)</strong><br>
+            The more you try to convince, the less convincing you are.<br>
+            The demonstration is the proof.<br>
+            The proof needs no convincing.
+            <pre class="dict-code">How_Convincing = Demonstration / Attempts_to_Convince
+// The Jragonator never convinces. He demonstrates.</pre>
+          </div>
+        </div>
+
+        <!-- CORRUPTION -->
+        <div class="dict-entry enemy">
+          <div class="dict-headword">CORRUPTION</div>
+          <div class="dict-pos">(n.) — enemy classification</div>
+          <div class="dict-def">
+            <strong>Lie = Story + Malintent.</strong><br>
+            Self-deception and harmful 'protective' stories are lies too,<br>
+            even when the intent feels nice.<br>
+            The story that protects you from reality is still a lie.<br>
+            The most dangerous corruption is the one that feels like kindness.
+            <pre class="dict-code">Lie = Story + Malintent
+// Self-deception counts.
+// "Protective" stories count.
+// Intent feeling nice does not clear the stack.</pre>
+          </div>
+        </div>
+
         <!-- ANTI-GEORGE BOOL -->
         <div class="dict-entry">
           <div class="dict-headword">ANTI-GEORGE BOOL</div>
@@ -522,7 +756,7 @@
     <footer>
       <div class="footer-brand">VENIM.US</div>
       <p>
-        <a href="index.html">← Back to SAUC-E</a>
+        <a href="https://www.sauc-e.com/">← Back to SAUC-E</a>
         &nbsp;·&nbsp;
         <span style="color:#26E8D360;">#26E8D3</span>
         &nbsp;·&nbsp;
@@ -531,9 +765,317 @@
         <span style="color:#0a0a0a; background:#26E8D360; padding:0 4px;">#010101</span>
       </p>
       <p style="margin-top:10px;">© 2026 VENIM.US UNDERSTREET DA JRAGONATOR · All Boolshit Slaughtered</p>
+      <p style="margin-top:8px; font-size:0.68rem; color:#26E8D340; letter-spacing:0.12em;">3_6_Nife.pi</p>
     </footer>
 
   </div><!-- /page-wrap -->
+
+  </div><!-- /tab-landing -->
+
+  <!-- ══ TAB: TERMIN.US AILNESS ══ -->
+  <div id="tab-terminal" role="tabpanel" style="display:none;">
+    <div class="terminal-wrap active">
+
+      <div class="term-header">&gt; TERMIN.US AILNESS :: DICTIONARY v4</div>
+      <div class="term-subhead">// OHAD'S JARGON DIC-TATOR 4 TAUTS — FULL LOAD · ALL ENTRIES · NO BOOLSHIT</div>
+
+      <!-- VERBATE -->
+      <div class="term-entry">
+        <div class="term-headword">VERBATE</div>
+        <div class="term-pos">/ˈvər-ˌbāt/ — verb</div>
+        <div class="term-def">
+          To take a concept, gap, or noun that has no verb and install a verb for it.<br>
+          To perform the act of making something verbable.<br>
+          The meta-action of the dictionary itself.<br><br>
+          <strong>AUTOLOGICAL DUNK:</strong> VERB is a noun. We verbated it.<br>
+          VERBATE is autological — it performs itself while describing itself.
+          <pre class="term-code">assert verb.is_load_bearing()
+assert verb.is_unawkward()
+assert verb.elevates_the_empire()
+// All three must pass. One fail = rejected.</pre>
+        </div>
+      </div>
+
+      <!-- VERBATIONS -->
+      <div class="term-entry">
+        <div class="term-headword">VERBATIONS</div>
+        <div class="term-pos">/vər-ˈbā-shənz/ — noun, plural</div>
+        <div class="term-def">
+          The state, quality, or atmosphere generated by precision language that performs itself.<br>
+          The collective frequency of load-bearing words in a system.<br>
+          Not vibes. Not energy. <strong>VERBATIONS.</strong><br><br>
+          <em style="color:#26E8D370;">sauce-e.com doesn't have good vibes. It has good VERBATIONS.</em><br>
+          That is not a quip. That is a product positioning statement.
+        </div>
+      </div>
+
+      <!-- VISCERNATE -->
+      <div class="term-entry">
+        <div class="term-headword">VISCERNATE</div>
+        <div class="term-pos">/ˈvi-sər-ˌnāt/ — verb</div>
+        <div class="term-def">
+          To be hit at the gut level by something that bypasses cognition entirely.<br>
+          To have the viscera activated before the mind has a chance to process.<br>
+          The body knowing before the brain.<br><br>
+          <strong>To understand</strong> = cognitive. Head only.<br>
+          <strong>To viscernate</strong> = somatic. Gut first. Head never catches up because it doesn't need to.
+        </div>
+      </div>
+
+      <!-- EMPIRIFY -->
+      <div class="term-entry">
+        <div class="term-headword">EMPIRIFY</div>
+        <div class="term-pos">/em-ˈpi-rə-ˌfī/ — verb</div>
+        <div class="term-def">
+          To make something empirical.<br>
+          To take a claim, intuition, or hypothesis and run it through the test<br>
+          that proves it load-bearing or rejects it as noise.<br><br>
+          <strong>To test</strong> = check if it works.<br>
+          <strong>To verify</strong> = confirm it already worked.<br>
+          <strong>To empirify</strong> = run the full stack. Structural integrity. Awkwardness. Empire elevation. All three. Every time.
+        </div>
+      </div>
+
+      <!-- AXIOMATE -->
+      <div class="term-entry">
+        <div class="term-headword">AXIOMATE</div>
+        <div class="term-pos">/ˈak-sē-ə-ˌmāt/ — verb</div>
+        <div class="term-def">
+          To declare something load-bearing without argument. Without proof.<br>
+          Because it IS the proof.<br>
+          To install a truth as a foundational primitive that requires no justification<br>
+          because it justifies everything else.<br><br>
+          <strong>To prove</strong> = demonstrate with evidence.<br>
+          <strong>To AXIOMATE</strong> = declare foundational by structural necessity. In one move. With authority. Right now.
+        </div>
+      </div>
+
+      <!-- SUBLIMATE -->
+      <div class="term-entry">
+        <div class="term-headword">SUBLIMATE</div>
+        <div class="term-pos">/ˈsəb-lə-ˌmāt/ — verb (hijacked &amp; installed)</div>
+        <div class="term-def">
+          To bypass the middle state entirely and go directly from raw to transcendent.<br>
+          In chemistry: solid straight to gas. No liquid phase.<br>
+          In human experience: raw input straight to elevated output. No processing. No digestion. Just direct.<br><br>
+          <strong>To viscernate</strong> = the gut is hit. Impact felt in the interior.<br>
+          <strong>To sublimate</strong> = bypass everything. Go direct to transcendent. No gut consultation. The top is reached immediately.
+        </div>
+      </div>
+
+      <!-- JRAGONATE -->
+      <div class="term-entry">
+        <div class="term-headword">JRAGONATE</div>
+        <div class="term-pos">/ˈjrā-gə-ˌnāt/ — verb</div>
+        <div class="term-def">
+          To grow by finding the gaps your own growth created.<br>
+          To expand a system by using the system's own outputs as the next set of inputs.<br>
+          The living algo that is never complete because ALIVE things do not complete — they JRAGONATE.
+          <pre class="term-code">def jragonate(system):
+    understand(system, depth=maximum)
+    mock(system)
+    quip(system)
+    forget_you_said_it()        # LOAD-BEARING. Non-negotiable.
+    watch_it_materialize()
+    audit(what_just_happened)
+    # repeat</pre>
+          <strong>THE QUIP IS THE CANARY.</strong> The materialization is the mine.<br>
+          The audit is how you know you have a system and not just luck.
+        </div>
+      </div>
+
+      <div class="term-divider"></div>
+
+      <!-- SUPERANTIHERO -->
+      <div class="term-entry">
+        <div class="term-headword">SUPERANTIHERO</div>
+        <div class="term-pos">(n.)</div>
+        <div class="term-def">
+          Not a hero who does bad things. Not a villain who does good things.<br>
+          A being who exists <strong>OUTSIDE</strong> the moral binary entirely.<br>
+          Operates below the system. Answers to no narrative.<br>
+          Primary function: <strong>slaughtering boolshit.</strong><br><br>
+          First known example: VENIM.US UNDERSTREET DA JRAGONATOR.
+        </div>
+      </div>
+
+      <!-- BOOLSHIT -->
+      <div class="term-entry enemy">
+        <div class="term-headword">BOOLSHIT</div>
+        <div class="term-pos">(n.) — enemy classification</div>
+        <div class="term-def">
+          The corruption of Boolean logic.<br>
+          When true/false is weaponized to control, manipulate, or flatten reality.<br>
+          Binary thinking used as a cage.<br>
+          George Boole gave us the AND, the OR, the NOT.<br>
+          Boolshit takes that gift and uses it to say:<br>
+          <em style="display:block; margin:8px 0 8px 12px;">"You're either with us or against us."</em>
+          <strong>Intelligence weaponized into false binaries.</strong><br>
+          The Jragonator's primary enemy.
+        </div>
+      </div>
+
+      <!-- NO SHIT BOOL -->
+      <div class="term-entry enemy">
+        <div class="term-headword">NO SHIT BOOL</div>
+        <div class="term-pos">(axiom) — enemy classification</div>
+        <div class="term-def">
+          Binary systems require both states simultaneously.<br>
+          Reality operates on AND logic, not OR logic.<br>
+          True AND False coexist.<br>
+          The foundation the Jragonator stands on.<br>
+          The proof that BOOLSHIT is a lie.
+        </div>
+      </div>
+
+      <!-- MAHVEEN'S EQUATION -->
+      <div class="term-entry">
+        <div class="term-headword">MAHVEEN'S EQUATION</div>
+        <div class="term-pos">(n.) — axiom of integrity</div>
+        <div class="term-def">
+          <strong>Claim + Deed = Integrity.</strong><br>
+          Matching claim and deed is Integrity, indeed.<br>
+          Especially when you are not being observed.<br>
+          Must be aligned with minimizing needless harm.
+          <pre class="term-code">Claim + Deed = Integrity
+// Especially when unobserved.
+// Must minimize needless harm.</pre>
+        </div>
+      </div>
+
+      <!-- GOLDEN LOCKS AND BRAIDS -->
+      <div class="term-entry">
+        <div class="term-headword">GOLDEN LOCKS AND BRAIDS</div>
+        <div class="term-pos">(n.) — the story test</div>
+        <div class="term-def">
+          A story (not a warning) should be:<br>
+          <strong>amusing, insightful, nourishing, compassionate, AND/OR strategic.</strong><br>
+          When it's none of the above → BOOLSHIT.<br>
+          When it is the opposite of nourishing → <strong>Toxic.</strong>
+          <pre class="term-code">assert story.is(amusing OR insightful OR nourishing OR compassionate OR strategic)
+// if none: BOOLSHIT
+// if anti-nourishing: TOXIC</pre>
+        </div>
+      </div>
+
+      <!-- THE SCHOEN PROOF -->
+      <div class="term-entry">
+        <div class="term-headword">THE SCHOEN PROOF</div>
+        <div class="term-pos">(n.) — the convincing equation</div>
+        <div class="term-def">
+          <strong>How Convincing = Demonstration / (Attempts to Convince)</strong><br>
+          The more you try to convince, the less convincing you are.<br>
+          The demonstration is the proof.<br>
+          The proof needs no convincing.
+          <pre class="term-code">How_Convincing = Demonstration / Attempts_to_Convince
+// The Jragonator never convinces. He demonstrates.</pre>
+        </div>
+      </div>
+
+      <!-- CORRUPTION -->
+      <div class="term-entry enemy">
+        <div class="term-headword">CORRUPTION</div>
+        <div class="term-pos">(n.) — enemy classification</div>
+        <div class="term-def">
+          <strong>Lie = Story + Malintent.</strong><br>
+          Self-deception and harmful 'protective' stories are lies too,<br>
+          even when the intent feels nice.<br>
+          The story that protects you from reality is still a lie.<br>
+          The most dangerous corruption is the one that feels like kindness.
+          <pre class="term-code">Lie = Story + Malintent
+// Self-deception counts.
+// "Protective" stories count.
+// Intent feeling nice does not clear the stack.</pre>
+        </div>
+      </div>
+
+      <!-- ANTI-GEORGE BOOL -->
+      <div class="term-entry">
+        <div class="term-headword">ANTI-GEORGE BOOL</div>
+        <div class="term-pos">(n.)</div>
+        <div class="term-def">
+          Not anti-logic. <strong>ANTI-BOOLSHIT.</strong><br>
+          The one who restores the full spectrum that binary thinking erased.<br>
+          Operates in the space between 0 and 1. Lives in the float.<br>
+          Thinks in probability not absolutes.<br><br>
+          First known Anti-George Bool: VENIM.US UNDERSTREET DA JRAGONATOR.
+        </div>
+      </div>
+
+      <!-- JRAGONATOR -->
+      <div class="term-entry">
+        <div class="term-headword">JRAGONATOR</div>
+        <div class="term-pos">(n.)</div>
+        <div class="term-def">
+          Not Dragon. <strong>JRAGON.</strong> The mutation. The evolution.<br>
+          The J is what makes it his. Venom without the villain arc.<br>
+          Dragon without the hoard. Underground without being underground forever.<br>
+          Weapon: <strong>clarity.</strong> Enemy: boolshit in all forms.
+        </div>
+      </div>
+
+      <!-- WOOTANGULAR KILLA B SWARM -->
+      <div class="term-entry">
+        <div class="term-headword">WOOTANGULAR KILLA B SWARM</div>
+        <div class="term-pos">(n.)</div>
+        <div class="term-def">
+          A collective. A formation. Not a team — a <strong>SWARM.</strong><br>
+          Each B is autonomous. Together they are geometric.<br>
+          Wootangular — Wu-Tang adjacent but mathematically evolved.<br>
+          They don't follow the Jragonator. They <strong>RECOGNIZE</strong> him.<br>
+          Killing Boolshit wit <strong>Brootality.</strong>
+        </div>
+      </div>
+
+      <!-- BROOTALITY -->
+      <div class="term-entry">
+        <div class="term-headword">BROOTALITY</div>
+        <div class="term-pos">(n.)</div>
+        <div class="term-def">
+          Not brutality. <strong>BROOTALITY.</strong><br>
+          The B is autonomous. The B is always there. Even in the killing.<br>
+          The precision that leaves no boolshit standing.
+        </div>
+      </div>
+
+      <!-- UNDERSTREET -->
+      <div class="term-entry">
+        <div class="term-headword">UNDERSTREET</div>
+        <div class="term-pos">(n.)</div>
+        <div class="term-def">
+          Below the system. Not underground — <strong>UNDERSTREET.</strong><br>
+          Where the Jragonator lives. Where the swarm operates.<br>
+          Where boolshit goes to die.
+        </div>
+      </div>
+
+      <div class="term-footer">
+        <p>&gt; END OF DICTIONARY · ALL ENTRIES EMPIRIFIED · ALL ASSERTIONS PASSED</p>
+        <p style="margin-top:8px;"><a href="https://www.sauc-e.com/">sauc-e.com</a> &nbsp;·&nbsp; 3_6_Nife.pi &nbsp;·&nbsp; © 2026 VENIM.US UNDERSTREET DA JRAGONATOR</p>
+      </div>
+
+    </div><!-- /terminal-wrap -->
+  </div><!-- /tab-terminal -->
+
+  <script>
+    function switchTab(tab) {
+      var landing  = document.getElementById('tab-landing');
+      var terminal = document.getElementById('tab-terminal');
+      var btnL     = document.getElementById('btn-landing');
+      var btnT     = document.getElementById('btn-terminal');
+      if (tab === 'landing') {
+        landing.style.display  = '';
+        terminal.style.display = 'none';
+        btnL.classList.add('active');    btnL.setAttribute('aria-selected', 'true');
+        btnT.classList.remove('active'); btnT.setAttribute('aria-selected', 'false');
+      } else {
+        landing.style.display  = 'none';
+        terminal.style.display = '';
+        btnT.classList.add('active');    btnT.setAttribute('aria-selected', 'true');
+        btnL.classList.remove('active'); btnL.setAttribute('aria-selected', 'false');
+      }
+    }
+  </script>
 
 </body>
 </html>
