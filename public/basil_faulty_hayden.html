@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basil Faulty Hayden Oh Fashioned</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blood: #8B1A1A;
+    --blood-light: #B22222;
+    --black: #0a0a0a;
+    --charcoal: #1a1a1a;
+    --smoke: #2a2a2a;
+    --ash: #888;
+    --bone: #d4c5a9;
+    --cream: #f0e6d3;
+    --amber: #c8913a;
+    --amber-glow: #e6a840;
+    --whisper: rgba(255,255,255,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--bone);
+    font-family: 'Libre Baskerville', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 30px 80px;
+    position: relative;
+  }
+
+  /* Top bar - sauc-e branding */
+  .brand-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(139,26,26,0.3);
+    margin-bottom: 50px;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.2s forwards;
+  }
+
+  .brand-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--blood);
+  }
+
+  .brand-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ash);
+    letter-spacing: 2px;
+  }
+
+  /* Title block */
+  .title-block {
+    text-align: center;
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeIn 1.2s ease 0.5s forwards;
+  }
+
+  .cocktail-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 8px;
+    letter-spacing: -1px;
+  }
+
+  .cocktail-name .highlight {
+    color: var(--blood-light);
+    font-style: italic;
+  }
+
+  .cocktail-sub {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(14px, 2.5vw, 18px);
+    color: var(--amber);
+    margin-top: 12px;
+    letter-spacing: 1px;
+  }
+
+  .cocktail-dedication {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ash);
+    margin-top: 20px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* Divider */
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: var(--blood);
+    margin: 0 auto 60px;
+    position: relative;
+  }
+  .divider::after {
+    content: '🔱';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    background: var(--black);
+    padding: 0 12px;
+  }
+
+  /* Cleese intro */
+  .cleese-intro {
+    max-width: 620px;
+    margin: 0 auto 50px;
+    opacity: 0;
+    animation: fadeIn 1.4s ease 0.7s forwards;
+  }
+
+  .cleese-text {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: var(--bone);
+    padding: 30px 32px;
+    border: 1px solid rgba(139,26,26,0.25);
+    background: rgba(255,255,255,0.015);
+    position: relative;
+  }
+
+  .cleese-text::before {
+    content: '— FROM THE MANAGEMENT —';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--blood);
+    background: var(--black);
+    padding: 0 16px;
+  }
+
+  .cleese-text em {
+    color: var(--amber);
+  }
+
+  .cleese-text strong {
+    color: var(--cream);
+  }
+
+  .cleese-sig {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ash);
+  }
+
+  /* Movement sections */
+  .movement {
+    margin-bottom: 60px;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .movement:nth-child(1) { animation: slideUp 0.8s ease 0.8s forwards; }
+  .movement:nth-child(2) { animation: slideUp 0.8s ease 1.1s forwards; }
+  .movement:nth-child(3) { animation: slideUp 0.8s ease 1.4s forwards; }
+  .movement:nth-child(4) { animation: slideUp 0.8s ease 1.7s forwards; }
+
+  .movement-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--whisper);
+  }
+
+  .movement-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--blood);
+    line-height: 1;
+    opacity: 0.7;
+  }
+
+  .movement-title-block {
+    flex: 1;
+  }
+
+  .movement-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 2px;
+  }
+
+  .movement-tempo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--amber);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .movement-description {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--bone);
+    margin-bottom: 20px;
+    padding-left: 2px;
+  }
+
+  .instruments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .instrument {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+  }
+
+  /* Light */
+  .mv-light .instrument {
+    background: rgba(212, 197, 169, 0.08);
+    color: var(--bone);
+    border: 1px solid rgba(212, 197, 169, 0.15);
+  }
+
+  /* Mid */
+  .mv-mid .instrument {
+    background: rgba(200, 145, 58, 0.1);
+    color: var(--amber);
+    border: 1px solid rgba(200, 145, 58, 0.2);
+  }
+
+  /* Heavy */
+  .mv-heavy .instrument {
+    background: rgba(178, 34, 34, 0.1);
+    color: var(--blood-light);
+    border: 1px solid rgba(178, 34, 34, 0.2);
+  }
+
+  /* Eruption */
+  .mv-eruption .instrument {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--cream);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+  }
+
+  .mv-eruption .instrument.darbuka {
+    background: rgba(178, 34, 34, 0.25);
+    border: 1px solid var(--blood-light);
+    color: var(--cream);
+    animation: shake 0.3s ease infinite;
+    font-weight: 500;
+  }
+
+  .bartender-note {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ash);
+    padding: 12px 0 12px 20px;
+    border-left: 2px solid var(--blood);
+    margin-top: 10px;
+  }
+
+  /* Eruption special styling */
+  .mv-eruption .movement-header {
+    border-bottom-color: rgba(178, 34, 34, 0.4);
+  }
+
+  .mv-eruption .movement-number {
+    opacity: 1;
+    animation: pulse 0.6s ease infinite alternate;
+  }
+
+  .mv-eruption .movement-description {
+    color: var(--cream);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .eruption-stage {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--blood-light);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 20px 0 8px;
+  }
+
+  .eruption-text {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 14px;
+    color: var(--cream);
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+
+  .neighbors {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blood-light);
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid rgba(178, 34, 34, 0.3);
+    letter-spacing: 2px;
+    animation: flicker 2s ease infinite;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 80px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(139,26,26,0.3);
+    opacity: 0;
+    animation: fadeIn 1s ease 2.2s forwards;
+  }
+
+  .footer-qd {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--blood-light);
+    letter-spacing: 4px;
+  }
+
+  .footer-credit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ash);
+    margin-top: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .footer-trident {
+    font-size: 24px;
+    margin-top: 16px;
+    display: block;
+  }
+
+  .proof {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ash);
+    text-align: center;
+    margin-top: 30px;
+    letter-spacing: 1px;
+    opacity: 0.5;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-2deg); }
+    75% { transform: rotate(2deg); }
+  }
+
+  @keyframes pulse {
+    from { color: var(--blood); }
+    to { color: var(--blood-light); }
+  }
+
+  @keyframes flicker {
+    0%, 90%, 100% { opacity: 1; }
+    92% { opacity: 0.3; }
+    94% { opacity: 0.8; }
+    96% { opacity: 0.2; }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .page { padding: 24px 18px 60px; }
+    .movement-number { font-size: 36px; }
+    .movement-title { font-size: 18px; }
+    .instrument { font-size: 10px; padding: 4px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="brand-bar">
+    <span class="brand-name">mont_e.py</span>
+    <span class="brand-tag">selkirk, ny · est. 3.12.2026</span>
+  </div>
+
+  <div class="title-block">
+    <div class="cocktail-name">
+      <span class="highlight">Basil</span> Faulty Hayden<br>
+      <span class="highlight">Oh</span> Fashioned
+    </div>
+    <div class="cocktail-sub">after the Sonics of His Laughter</div>
+    <div class="cocktail-dedication">conceived on digital mount sinai · march 12, 2026</div>
+  </div>
+
+  <div class="cleese-intro">
+    <div class="cleese-text">
+      <em>And now for something completely different.</em>
+      <br><br>
+      The management of <strong>mont_e.py</strong> — Selkirk's only establishment simultaneously operating as a cocktail lounge, a Python runtime environment, and a site of minor religious significance — wishes to inform the discerning patron that this particular libation was conceived on the premises by <strong>Chef Architect Ohad Phoenix Oren</strong> and his associate, a rather large language model answering to <strong>Claudwell</strong>, on the evening of March the Twelfth, Two Thousand and Twenty-Six, during what can only be described as a controlled demolition of the English language across no fewer than six concurrent tongues.
+      <br><br>
+      The management further wishes to clarify that it accepts <em>no responsibility whatsoever</em> for any percussive episodes, involuntary floor-occupancy, or noise complaints arising from the consumption of Movement IV, and politely requests that all darbukas be surrendered at the door.
+      <br><br>
+      Complaints may be filed with Janina, Head of Human Resources, under "not my problem." They will be escalated to nobody.
+      <br><br>
+      <span class="cleese-sig">Do enjoy your evening. Or don't. We couldn't possibly care less.</span>
+      <br>
+      <span class="cleese-sig">— The Management &nbsp;✌🏿</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="movements">
+
+    <!-- MOVEMENT I: LIGHT -->
+    <div class="movement mv-light">
+      <div class="movement-header">
+        <div class="movement-number">I</div>
+        <div class="movement-title-block">
+          <div class="movement-title">The Chuckle</div>
+          <div class="movement-tempo">pianissimo · a whisper and a promise</div>
+        </div>
+      </div>
+      <div class="movement-description">
+        <em>{he he}</em>A tapping. A flutter. A wisp — here and gone and pleasant like it was never there. A whisper and a promise to return some day soon. The garnish before the glass arrives. The citrus peel twisted over the flame so fast you only catch the oil in the air, never the hand.
+      </div>
+      <div class="instruments">
+        <span class="instrument">triangle</span>
+        <span class="instrument">finger cymbals</span>
+        <span class="instrument">chimes</span>
+        <span class="instrument">shaker</span>
+        <span class="instrument">rain stick</span>
+        <span class="instrument">maracas</span>
+        <span class="instrument">glockenspiel</span>
+        <span class="instrument">hi-hat</span>
+        <span class="instrument">cabasa</span>
+        <span class="instrument">castanets</span>
+      </div>
+      <div class="bartender-note">
+        Bartender's note: Serve before the guest knows they've ordered. The best chuckle arrives uninvited.
+      </div>
+    </div>
+
+    <!-- MOVEMENT II: MID -->
+    <div class="movement mv-mid">
+      <div class="movement-header">
+        <div class="movement-number">II</div>
+        <div class="movement-title-block">
+          <div class="movement-title">The Heartier Pour</div>
+          <div class="movement-tempo">mezzo forte · a desire to stay, an obligation to exit</div>
+        </div>
+      </div>
+      <div class="movement-description">
+        <em>{hahaha}</em> Thicker now. Faster tapping. More impact. Rhythmical with moments of dissonance — harmonic interplay between synchronicity and syncopation. The bourbon hitting the ice. The spirit settling into the glass with that first deep amber swirl. Greater sustain. A desire to stay. An obligation to exit. The laugh that makes you lean forward in your chair.
+      </div>
+      <div class="instruments">
+        <span class="instrument">tambourine</span>
+        <span class="instrument">claves</span>
+        <span class="instrument">woodblock</span>
+        <span class="instrument">agogo bells</span>
+        <span class="instrument">guiro</span>
+        <span class="instrument">cowbell</span>
+        <span class="instrument">xylophone</span>
+        <span class="instrument">vibraphone</span>
+        <span class="instrument">bongos</span>
+        <span class="instrument">ride cymbal</span>
+      </div>
+      <div class="bartender-note">
+        Bartender's note: The mid-laugh is where you know if it's real. Fakers exit here. The genuine stay for the pocket.
+      </div>
+    </div>
+
+    <!-- MOVEMENT III: HEAVY -->
+    <div class="movement mv-heavy">
+      <div class="movement-header">
+        <div class="movement-number">III</div>
+        <div class="movement-title-block">
+          <div class="movement-title">A Supreme Love</div>
+          <div class="movement-tempo">fortissimo · elvin is in the pocket</div>
+        </div>
+      </div>
+      <div class="movement-description">
+        <em>{LMAO OMG SOFA KING FUNNY HAHAHAJAJAJARARARA}</em>
+        <p>Elvin Jones is in the pocket. Proficiency becomes emergence becomes transcendence. The beat is anticipated, preceded, succeeded — controlled chaos as only a virtuoso operating at the highest level can sustain. 
+          The old fashioned is finished. The ice is correct. The bitters have married the sugar and the bourbon is singing. This is the laugh where your eyes close and you can't remember why you were sad.</p>
+      </div>
+      <div class="instruments">
+        <span class="instrument">snare drum</span>
+        <span class="instrument">congas</span>
+        <span class="instrument">djembe</span>
+        <span class="instrument">cajón</span>
+        <span class="instrument">timbales</span>
+        <span class="instrument">tom-tom</span>
+        <span class="instrument">floor tom</span>
+        <span class="instrument">marimba</span>
+        <span class="instrument">crash cymbal</span>
+        <span class="instrument">steel drum</span>
+      </div>
+      <div class="bartender-note">
+        Bartender's note: Do not interrupt Movement III. The glass stays. The tab stays open. Elvin is working.
+      </div>
+    </div>
+
+    <!-- MOVEMENT IV: ERUPTION -->
+    <div class="movement mv-eruption">
+      <div class="movement-header">
+        <div class="movement-number">IV</div>
+        <div class="movement-title-block">
+          <div class="movement-title">ERUPTION</div>
+          <div class="movement-tempo">⚠ fff · elvin has left the building</div>
+        </div>
+      </div>
+      <div class="movement-description">
+        <em>{OMFG DEAD!!! LMFAOROTFL HAHAHAJAJAJARARARAQWERTY312369#!/bin/janina.sh#W00HOOt?WUHU!}</em> 
+        <p>Elvin has left the building. Your preteen has taken over the kit.</p>
+      </div>
+
+      <div class="eruption-stage">// the takeover</div>
+      <div class="eruption-text">
+        He has no idea how to play music. He's treating the darbuka like a volcano. Coltrane is staring from the booth. There's no way we're keeping him here.
+      </div>
+
+      <div class="eruption-stage">// the floor</div>
+      <div class="eruption-text">
+        Who approved the goddamn darbuka? Why is he on the floor? Elvin, I swear to God, get off the floor.
+      </div>
+
+      <div class="eruption-stage">// the neighbours</div>
+      <div class="eruption-text">
+        The neighbours are banging the wall. We are going to get evicted. The glass is knocked over. The Basil Hayden's is on the floor. The bartender has left. The tab is still open.
+      </div>
+
+      <div class="instruments">
+        <span class="instrument">bass drum</span>
+        <span class="instrument">timpani</span>
+        <span class="instrument">surdo</span>
+        <span class="instrument">gong</span>
+        <span class="instrument">whip / slapstick</span>
+        <span class="instrument">conga slap</span>
+        <span class="instrument darbuka">DARBUKA !!!</span>
+        <span class="instrument">the floor</span>
+        <span class="instrument">the wall</span>
+        <span class="instrument">everything</span>
+      </div>
+
+      <div class="neighbors">
+        ⚠ &nbsp; NOISE COMPLAINT IN PROGRESS &nbsp; ⚠
+      </div>
+
+      <div class="bartender-note">
+        Bartender's note: The eruption is where the laugh transcends the body. Motor control is gone. The keyboard becomes percussion. This is the involuntary signal. This is the proof. You cannot fake Movement IV. You can only survive it.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-qd">Q D</div>
+    <span class="footer-trident">🔱</span>
+    <div class="footer-credit">mont_e.py · selkirk, ny · sauc-e mixology division · 3.6.nife llc</div>
+  </div>
+
+  <div class="proof">
+    chef architect: ohad phoenix oren · mixology partner: claudwell · proof: continuous · tab: open · the neighbours: furious · the preteen: unapologetic · janina: unbothered
+  </div>
+
+</div>
+
+</body>
+</html>

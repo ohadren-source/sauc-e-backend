@@ -1,0 +1,36 @@
+import math
+
+# The Universe
+PHYSICS = lambda m: m  # Arithmetic (identity/mass)
+MATH = lambda e: math.e ** e  # Calculus (exponential growth)
+POWER = 2  # The exponent (borrowed from Albert)
+PI = math.pi  # The cycle (360 degrees)
+
+
+# The Bridge: e=mc^2
+def universe(mass):
+    return mass * (3e8 ** POWER)  # Speed of light squared
+
+
+# The Cipher: Complete circle
+def cipher(value):
+    return value * (2 * PI)  # Full rotation
+
+
+# The Enchilada
+def enchilada(mass):
+    energy = universe(mass)
+    cycle = cipher(energy)
+    return energy, cycle
+
+
+# Test
+if __name__ == "__main__":
+    m = 1
+    e, c = enchilada(m)
+    print(f"Mass: {m}")
+    print(f"Energy: {e}")
+    print(f"Cycle: {c}")
+    print(f"Ratio (E/m): {e/m}")
+    print(f"Pi constant: {PI}")
+# Pass Over    
