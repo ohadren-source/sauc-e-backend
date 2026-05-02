@@ -11,18 +11,14 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const path = require('path');
 require('dotenv').config();
+
+const counterDb = require('./counter-db');
+const paymentVerification = require('./payment-verification');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// ============================================================================
-// STATIC FILES & MAIN PAGE
-// ============================================================================
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 // ============================================================================
 // API KEYS (Hardcoded on backend, hidden from iOS)
@@ -152,28 +148,43 @@ app.post('/api/catsup/get-lesson', async (req, res) => {
 
 /**
  * POST /api/catsup/usage-status
- * Returns current usage count for the web free tier
+ * Get or create user counter. Check if subscription is valid.
  */
 app.post('/api/catsup/usage-status', async (req, res) => {
   try {
-    const { customerId } = req.body;
-    const cid = customerId || 'anonymous';
+    const { fingerprint, payment_provider, subscription_id } = req.body;
 
-    const usage = usageLog[cid] && usageLog[cid]['CATSUP']
-      ? usageLog[cid]['CATSUP'].count
-      : 0;
+    if (!fingerprint) {
+      return res.status(400).json({ status: 'error', message: 'fingerprint required' });
+    }
 
-    const subscriptionStatus = await checkSubscription(cid, 'CATSUP');
+    // Get or create user
+    let user = await counterDb.getOrCreateCounterUser(fingerprint, 'catsup');
+    if (!user) {
+      return res.status(500).json({ status: 'error', message: 'Could not create user' });
+    }
+
+    // If subscription data provided, verify it
+    if (payment_provider && subscription_id) {
+      const isActive = await paymentVerification.verifySubscription(
+        payment_provider,
+        subscription_id
+      );
+      if (isActive && !user.is_paid) {
+        user = await counterDb.markUserPaid(user.id, payment_provider, subscription_id);
+      }
+    }
 
     res.json({
-      usageCount: usage,
-      freeLimit: 9,
-      remaining: subscriptionStatus.isSubscribed ? 999 : Math.max(0, 9 - usage),
-      isSubscribed: subscriptionStatus.isSubscribed
+      status: 'ok',
+      userId: user.id,
+      usageCount: user.is_paid ? 0 : (9 - user.uses_remaining),
+      usesRemaining: user.is_paid ? 999999 : user.uses_remaining,
+      isPaid: user.is_paid
     });
-  } catch (error) {
-    console.error('CATSUP usage-status error:', error);
-    res.json({ usageCount: 0, freeLimit: 9, remaining: 9, isSubscribed: false });
+  } catch (err) {
+    console.error('[CATSUP] usage-status error:', err);
+    res.status(500).json({ status: 'error', error: err.message });
   }
 });
 
@@ -643,29 +654,43 @@ app.post('/api/bbqe/check-threat', async (req, res) => {
 
 /**
  * POST /api/bbqe/usage-status
- * Returns current usage count for a customer
+ * Get or create user counter. Check if subscription is valid.
  */
-
 app.post('/api/bbqe/usage-status', async (req, res) => {
   try {
-    const { customerId } = req.body;
-    const cid = customerId || 'anonymous';
+    const { fingerprint, payment_provider, subscription_id } = req.body;
 
-    const usage = usageLog[cid] && usageLog[cid]['BBQE']
-      ? usageLog[cid]['BBQE'].count
-      : 0;
+    if (!fingerprint) {
+      return res.status(400).json({ status: 'error', message: 'fingerprint required' });
+    }
 
-    const subscriptionStatus = await checkSubscription(cid, 'BBQE');
+    // Get or create user
+    let user = await counterDb.getOrCreateCounterUser(fingerprint, 'bbqe');
+    if (!user) {
+      return res.status(500).json({ status: 'error', message: 'Could not create user' });
+    }
+
+    // If subscription data provided, verify it
+    if (payment_provider && subscription_id) {
+      const isActive = await paymentVerification.verifySubscription(
+        payment_provider,
+        subscription_id
+      );
+      if (isActive && !user.is_paid) {
+        user = await counterDb.markUserPaid(user.id, payment_provider, subscription_id);
+      }
+    }
 
     res.json({
-      usageCount: usage,
-      freeLimit: 5,
-      remaining: subscriptionStatus.isSubscribed ? 999 : Math.max(0, 5 - usage),
-      isSubscribed: subscriptionStatus.isSubscribed
+      status: 'ok',
+      userId: user.id,
+      usageCount: user.is_paid ? 0 : (9 - user.uses_remaining),
+      usesRemaining: user.is_paid ? 999999 : user.uses_remaining,
+      isPaid: user.is_paid
     });
-  } catch (error) {
-    console.error('BBQE usage-status error:', error);
-    res.json({ usageCount: 0, freeLimit: 5, remaining: 5, isSubscribed: false });
+  } catch (err) {
+    console.error('[BBQE] usage-status error:', err);
+    res.status(500).json({ status: 'error', error: err.message });
   }
 });
 
@@ -701,7 +726,7 @@ app.post('/api/relish/get-wisdom', async (req, res) => {
 
     // Step 1: Check subscription
     const subscriptionStatus = await checkSubscription(customerId, 'RELISH');
-    
+
     if (!subscriptionStatus.isSubscribed && subscriptionStatus.wisdomUsed >= 10) {
       return res.status(403).json({
         error: 'Free limit reached',
@@ -725,6 +750,155 @@ app.post('/api/relish/get-wisdom', async (req, res) => {
   } catch (error) {
     console.error('RELISH error:', error);
     res.status(500).json({ error: 'Failed to get wisdom' });
+  }
+});
+
+/**
+ * POST /api/relish/usage-status
+ * Get or create user counter. Check if subscription is valid.
+ */
+app.post('/api/relish/usage-status', async (req, res) => {
+  try {
+    const { fingerprint, payment_provider, subscription_id } = req.body;
+
+    if (!fingerprint) {
+      return res.status(400).json({ status: 'error', message: 'fingerprint required' });
+    }
+
+    // Get or create user
+    let user = await counterDb.getOrCreateCounterUser(fingerprint, 'relish');
+    if (!user) {
+      return res.status(500).json({ status: 'error', message: 'Could not create user' });
+    }
+
+    // If subscription data provided, verify it
+    if (payment_provider && subscription_id) {
+      const isActive = await paymentVerification.verifySubscription(
+        payment_provider,
+        subscription_id
+      );
+      if (isActive && !user.is_paid) {
+        user = await counterDb.markUserPaid(user.id, payment_provider, subscription_id);
+      }
+    }
+
+    res.json({
+      status: 'ok',
+      userId: user.id,
+      usageCount: user.is_paid ? 0 : (9 - user.uses_remaining),
+      usesRemaining: user.is_paid ? 999999 : user.uses_remaining,
+      isPaid: user.is_paid
+    });
+  } catch (err) {
+    console.error('[RELISH] usage-status error:', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// ============================================================================
+// COUNTER DECREMENT ENDPOINTS
+// ============================================================================
+
+/**
+ * POST /api/bbqe/decrement
+ * Called after successful action (scan, question, wisdom)
+ */
+app.post('/api/bbqe/decrement', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ status: 'error', message: 'userId required' });
+    }
+
+    const updated = await counterDb.decrementCounter(userId, 'bbqe');
+    if (!updated) {
+      return res.status(500).json({ status: 'error', message: 'Could not decrement' });
+    }
+
+    if (updated.uses_remaining <= 0 && !updated.is_paid) {
+      return res.status(403).json({
+        status: 'paywall',
+        usesRemaining: 0,
+        message: 'Free uses exhausted'
+      });
+    }
+
+    res.json({
+      status: 'ok',
+      usesRemaining: updated.uses_remaining
+    });
+  } catch (err) {
+    console.error('[BBQE] decrement error:', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+/**
+ * POST /api/catsup/decrement
+ */
+app.post('/api/catsup/decrement', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ status: 'error', message: 'userId required' });
+    }
+
+    const updated = await counterDb.decrementCounter(userId, 'catsup');
+    if (!updated) {
+      return res.status(500).json({ status: 'error', message: 'Could not decrement' });
+    }
+
+    if (updated.uses_remaining <= 0 && !updated.is_paid) {
+      return res.status(403).json({
+        status: 'paywall',
+        usesRemaining: 0,
+        message: 'Free uses exhausted'
+      });
+    }
+
+    res.json({
+      status: 'ok',
+      usesRemaining: updated.uses_remaining
+    });
+  } catch (err) {
+    console.error('[CATSUP] decrement error:', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+/**
+ * POST /api/relish/decrement
+ */
+app.post('/api/relish/decrement', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ status: 'error', message: 'userId required' });
+    }
+
+    const updated = await counterDb.decrementCounter(userId, 'relish');
+    if (!updated) {
+      return res.status(500).json({ status: 'error', message: 'Could not decrement' });
+    }
+
+    if (updated.uses_remaining <= 0 && !updated.is_paid) {
+      return res.status(403).json({
+        status: 'paywall',
+        usesRemaining: 0,
+        message: 'Free uses exhausted'
+      });
+    }
+
+    res.json({
+      status: 'ok',
+      usesRemaining: updated.uses_remaining
+    });
+  } catch (err) {
+    console.error('[RELISH] decrement error:', err);
+    res.status(500).json({ status: 'error', error: err.message });
   }
 });
 
@@ -888,6 +1062,9 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
+// Initialize counter tables on startup
+counterDb.ensureCounterTables();
+
 app.listen(PORT, () => {
   console.log(`SAUC-E Backend running on port ${PORT}`);
   console.log(`CATSUP endpoint: POST /api/catsup/ask-question`);
@@ -898,6 +1075,9 @@ app.listen(PORT, () => {
   console.log(`  - POST /api/bbqe/usage-status`);
   console.log(`RELISH endpoint: POST /api/relish/get-wisdom`);
   console.log(`Health check: GET /health`);
+  console.log(`\nCounter System:`);
+  console.log(`  - POST /api/{app}/usage-status (fingerprint-based)`);
+  console.log(`  - POST /api/{app}/decrement (after successful action)`);
 });
 
 module.exports = app;
