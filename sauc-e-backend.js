@@ -73,10 +73,18 @@ app.post('/api/catsup/ask-question', async (req, res) => {
       return res.status(400).json({ error: 'Question required' });
     }
 
-    // Step 1: Check subscription via RevenueCat
-    const subscriptionStatus = await checkSubscription(customerId, 'CATSUP');
-    
-    if (!subscriptionStatus.isSubscribed && subscriptionStatus.questionsUsed >= 3) {
+    if (!customerId) {
+      return res.status(400).json({ error: 'customerId required' });
+    }
+
+    // Step 1: Get or create user counter (Postgres-persisted)
+    const user = await counterDb.getOrCreateCounterUser(customerId, 'catsup');
+    if (!user) {
+      return res.status(500).json({ error: 'Could not retrieve user counter' });
+    }
+
+    // Step 2: Enforce paywall BEFORE doing the work
+    if (!user.is_paid && user.uses_remaining <= 0) {
       return res.status(403).json({
         error: 'Free limit reached',
         subscriptionRequired: true,
@@ -84,16 +92,27 @@ app.post('/api/catsup/ask-question', async (req, res) => {
       });
     }
 
-    // Step 2: Ask Claude for answer
+    // Step 3: Ask Claude for answer
     const answer = await askClaude(question, topic);
 
-    // Step 3: Log question usage
+    // Step 4: Decrement counter (Postgres-persisted)
+    let updated = user;
+    if (!user.is_paid) {
+      updated = await counterDb.decrementCounter(user.id, 'catsup');
+      if (!updated) {
+        // Soft-fail: still return the answer, but log
+        console.error('[CATSUP] decrement failed for user', user.id);
+        updated = user;
+      }
+    }
+
+    // Step 5: Log question usage (in-memory audit, separate from counter)
     await logUsage(customerId, 'CATSUP', 'question');
 
     res.json({
       answer: answer,
       subscriptionRequired: false,
-      questionsRemaining: subscriptionStatus.isSubscribed ? 999 : (3 - subscriptionStatus.questionsUsed - 1)
+      questionsRemaining: user.is_paid ? 999 : updated.uses_remaining
     });
 
   } catch (error) {
@@ -119,9 +138,18 @@ app.post('/api/catsup/get-lesson', async (req, res) => {
       return res.status(400).json({ error: 'Question required' });
     }
 
-    const subscriptionStatus = await checkSubscription(customerId, 'CATSUP');
+    if (!customerId) {
+      return res.status(400).json({ error: 'customerId required' });
+    }
 
-    if (!subscriptionStatus.isSubscribed && subscriptionStatus.questionsUsed >= 9) {
+    // Step 1: Get or create user counter (Postgres-persisted)
+    const user = await counterDb.getOrCreateCounterUser(customerId, 'catsup');
+    if (!user) {
+      return res.status(500).json({ error: 'Could not retrieve user counter' });
+    }
+
+    // Step 2: Enforce paywall BEFORE doing the work
+    if (!user.is_paid && user.uses_remaining <= 0) {
       return res.status(403).json({
         error: 'Free limit reached',
         subscriptionRequired: true,
@@ -129,15 +157,27 @@ app.post('/api/catsup/get-lesson', async (req, res) => {
       });
     }
 
+    // Step 3: Ask Claude for the lesson
     const lesson = await askClaude(situation, context);
 
+    // Step 4: Decrement counter (Postgres-persisted)
+    let updated = user;
+    if (!user.is_paid) {
+      updated = await counterDb.decrementCounter(user.id, 'catsup');
+      if (!updated) {
+        console.error('[CATSUP] decrement failed for user', user.id);
+        updated = user;
+      }
+    }
+
+    // Step 5: Log lesson usage (in-memory audit, separate from counter)
     await logUsage(customerId, 'CATSUP', 'lesson');
 
     res.json({
       lesson: lesson,
       wisdom: lesson,
       subscriptionRequired: false,
-      lessonsRemaining: subscriptionStatus.isSubscribed ? 999 : (9 - subscriptionStatus.questionsUsed - 1)
+      lessonsRemaining: user.is_paid ? 999 : updated.uses_remaining
     });
 
   } catch (error) {
@@ -263,20 +303,39 @@ app.post('/api/bbqe/scan-link', async (req, res) => {
       return res.status(400).json({ error: 'URL required' });
     }
 
-    // Step 1: Check usage (free tier — 5 free scans)
-    const subscriptionStatus = await checkSubscription(customerId, 'BBQE');
+    if (!customerId) {
+      return res.status(400).json({ error: 'customerId required' });
+    }
 
-    if (!subscriptionStatus.isSubscribed && subscriptionStatus.checksUsed >= 5) {
+    // Step 1: Get or create user counter (Postgres-persisted)
+    const user = await counterDb.getOrCreateCounterUser(customerId, 'bbqe');
+    if (!user) {
+      return res.status(500).json({ error: 'Could not retrieve user counter' });
+    }
+
+    // Step 2: Enforce paywall BEFORE doing the work
+    if (!user.is_paid && user.uses_remaining <= 0) {
       return res.status(403).json({
         error: 'Free limit reached',
-        subscriptionRequired: true
+        subscriptionRequired: true,
+        checksRemaining: 0
       });
     }
 
-    // Step 2: Analyze the URL
+    // Step 3: Analyze the URL
     const result = analyzeLinkThreat(url);
 
-    // Step 3: Log usage
+    // Step 4: Decrement counter (Postgres-persisted)
+    let updated = user;
+    if (!user.is_paid) {
+      updated = await counterDb.decrementCounter(user.id, 'bbqe');
+      if (!updated) {
+        console.error('[BBQE] decrement failed for user', user.id);
+        updated = user;
+      }
+    }
+
+    // Step 5: Log usage (in-memory audit, separate from counter)
     await logUsage(customerId, 'BBQE', 'link_scan');
 
     res.json({
@@ -286,7 +345,7 @@ app.post('/api/bbqe/scan-link', async (req, res) => {
       flags: result.flags,
       summary: result.summary,
       subscriptionRequired: false,
-      checksRemaining: subscriptionStatus.isSubscribed ? 999 : (5 - subscriptionStatus.checksUsed - 1)
+      checksRemaining: user.is_paid ? 999 : updated.uses_remaining
     });
 
   } catch (error) {
@@ -622,20 +681,39 @@ app.post('/api/bbqe/check-threat', async (req, res) => {
       return res.status(400).json({ error: 'Email required' });
     }
 
-    // Step 1: Check subscription (PitBoss only)
-    const subscriptionStatus = await checkSubscription(customerId, 'BBQE');
-    
-    if (!subscriptionStatus.isSubscribed && subscriptionStatus.checksUsed >= 5) {
+    if (!customerId) {
+      return res.status(400).json({ error: 'customerId required' });
+    }
+
+    // Step 1: Get or create user counter (Postgres-persisted)
+    const user = await counterDb.getOrCreateCounterUser(customerId, 'bbqe');
+    if (!user) {
+      return res.status(500).json({ error: 'Could not retrieve user counter' });
+    }
+
+    // Step 2: Enforce paywall BEFORE doing the work
+    if (!user.is_paid && user.uses_remaining <= 0) {
       return res.status(403).json({
         error: 'Free limit reached',
-        subscriptionRequired: true
+        subscriptionRequired: true,
+        checksRemaining: 0
       });
     }
 
-    // Step 2: Check RapidAPI threat databases
+    // Step 3: Check RapidAPI threat databases
     const threatResult = await checkRapidAPIThreats(email);
 
-    // Step 3: Log check usage
+    // Step 4: Decrement counter (Postgres-persisted)
+    let updated = user;
+    if (!user.is_paid) {
+      updated = await counterDb.decrementCounter(user.id, 'bbqe');
+      if (!updated) {
+        console.error('[BBQE] decrement failed for user', user.id);
+        updated = user;
+      }
+    }
+
+    // Step 5: Log check usage (in-memory audit, separate from counter)
     await logUsage(customerId, 'BBQE', 'threat_check');
 
     res.json({
@@ -643,7 +721,7 @@ app.post('/api/bbqe/check-threat', async (req, res) => {
       breachCount: threatResult.breachCount,
       sources: threatResult.sources,
       subscriptionRequired: false,
-      checksRemaining: subscriptionStatus.isSubscribed ? 999 : (5 - subscriptionStatus.checksUsed - 1)
+      checksRemaining: user.is_paid ? 999 : updated.uses_remaining
     });
 
   } catch (error) {
@@ -724,27 +802,46 @@ app.post('/api/relish/get-wisdom', async (req, res) => {
       return res.status(400).json({ error: 'Situation required' });
     }
 
-    // Step 1: Check subscription
-    const subscriptionStatus = await checkSubscription(customerId, 'RELISH');
+    if (!customerId) {
+      return res.status(400).json({ error: 'customerId required' });
+    }
 
-    if (!subscriptionStatus.isSubscribed && subscriptionStatus.wisdomUsed >= 10) {
+    // Step 1: Get or create user counter (Postgres-persisted)
+    const user = await counterDb.getOrCreateCounterUser(customerId, 'relish');
+    if (!user) {
+      return res.status(500).json({ error: 'Could not retrieve user counter' });
+    }
+
+    // Step 2: Enforce paywall BEFORE doing the work
+    if (!user.is_paid && user.uses_remaining <= 0) {
       return res.status(403).json({
         error: 'Free limit reached',
-        subscriptionRequired: true
+        subscriptionRequired: true,
+        wisdomRemaining: 0
       });
     }
 
-    // Step 2: Ask Claude for wisdom (3-sentence compression)
+    // Step 3: Ask Claude for wisdom (3-sentence compression)
     const wisdom = await getWisdom(situation, context);
 
-    // Step 3: Log wisdom usage
+    // Step 4: Decrement counter (Postgres-persisted)
+    let updated = user;
+    if (!user.is_paid) {
+      updated = await counterDb.decrementCounter(user.id, 'relish');
+      if (!updated) {
+        console.error('[RELISH] decrement failed for user', user.id);
+        updated = user;
+      }
+    }
+
+    // Step 5: Log wisdom usage (in-memory audit, separate from counter)
     await logUsage(customerId, 'RELISH', 'wisdom');
 
     res.json({
       wisdom: wisdom,
       context: context,
       subscriptionRequired: false,
-      wisdomRemaining: subscriptionStatus.isSubscribed ? 999 : (10 - subscriptionStatus.wisdomUsed - 1)
+      wisdomRemaining: user.is_paid ? 999 : updated.uses_remaining
     });
 
   } catch (error) {
