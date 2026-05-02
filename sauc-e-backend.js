@@ -15,10 +15,41 @@ require('dotenv').config();
 
 const counterDb = require('./counter-db');
 const paymentVerification = require('./payment-verification');
+const crypto = require('crypto');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Trust Railway's proxy so req.ip returns the real client IP, not the proxy
+app.set('trust proxy', true);
+
+// ============================================================================
+// SERVER-SIDE FINGERPRINT RESOLVER
+// ============================================================================
+// Builds a stable identifier from the request itself.
+// Uses customerId from the body ONLY if it looks stable (length >= 16).
+// Otherwise falls back to hash(ip + userAgent) which is stable across
+// browser refreshes from the same device.
+// ============================================================================
+
+function resolveFingerprint(req) {
+  const { customerId } = req.body || {};
+
+  // If frontend sends a stable-looking customerId, trust it
+  if (typeof customerId === 'string' && customerId.length >= 16) {
+    return customerId;
+  }
+
+  // Otherwise build a server-side fingerprint from IP + User-Agent
+  const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown-ip';
+  const ua = req.headers['user-agent'] || 'unknown-ua';
+  const raw = `${ip}::${ua}`;
+  const hash = crypto.createHash('sha256').update(raw).digest('hex');
+
+  // Prefix to mark it as server-derived for debugging
+  return `srv_${hash.slice(0, 32)}`;
+}
 
 // ============================================================================
 // API KEYS (Hardcoded on backend, hidden from iOS)
@@ -67,18 +98,16 @@ app.get('/health', (req, res) => {
 
 app.post('/api/catsup/ask-question', async (req, res) => {
   try {
-    const { customerId, question, topic } = req.body;
+    const { question, topic } = req.body;
 
     if (!question) {
       return res.status(400).json({ error: 'Question required' });
     }
 
-    if (!customerId) {
-      return res.status(400).json({ error: 'customerId required' });
-    }
+    const fingerprint = resolveFingerprint(req);
 
     // Step 1: Get or create user counter (Postgres-persisted)
-    const user = await counterDb.getOrCreateCounterUser(customerId, 'catsup');
+    const user = await counterDb.getOrCreateCounterUser(fingerprint, 'catsup');
     if (!user) {
       return res.status(500).json({ error: 'Could not retrieve user counter' });
     }
@@ -100,14 +129,13 @@ app.post('/api/catsup/ask-question', async (req, res) => {
     if (!user.is_paid) {
       updated = await counterDb.decrementCounter(user.id, 'catsup');
       if (!updated) {
-        // Soft-fail: still return the answer, but log
         console.error('[CATSUP] decrement failed for user', user.id);
         updated = user;
       }
     }
 
     // Step 5: Log question usage (in-memory audit, separate from counter)
-    await logUsage(customerId, 'CATSUP', 'question');
+    await logUsage(fingerprint, 'CATSUP', 'question');
 
     res.json({
       answer: answer,
@@ -132,18 +160,16 @@ app.post('/api/catsup/ask-question', async (req, res) => {
  */
 app.post('/api/catsup/get-lesson', async (req, res) => {
   try {
-    const { customerId, situation, context } = req.body;
+    const { situation, context } = req.body;
 
     if (!situation) {
       return res.status(400).json({ error: 'Question required' });
     }
 
-    if (!customerId) {
-      return res.status(400).json({ error: 'customerId required' });
-    }
+    const fingerprint = resolveFingerprint(req);
 
     // Step 1: Get or create user counter (Postgres-persisted)
-    const user = await counterDb.getOrCreateCounterUser(customerId, 'catsup');
+    const user = await counterDb.getOrCreateCounterUser(fingerprint, 'catsup');
     if (!user) {
       return res.status(500).json({ error: 'Could not retrieve user counter' });
     }
@@ -171,7 +197,7 @@ app.post('/api/catsup/get-lesson', async (req, res) => {
     }
 
     // Step 5: Log lesson usage (in-memory audit, separate from counter)
-    await logUsage(customerId, 'CATSUP', 'lesson');
+    await logUsage(fingerprint, 'CATSUP', 'lesson');
 
     res.json({
       lesson: lesson,
@@ -297,18 +323,16 @@ const SUSPICIOUS_WIFI_PATTERNS = [
 
 app.post('/api/bbqe/scan-link', async (req, res) => {
   try {
-    const { customerId, url } = req.body;
+    const { url } = req.body;
 
     if (!url) {
       return res.status(400).json({ error: 'URL required' });
     }
 
-    if (!customerId) {
-      return res.status(400).json({ error: 'customerId required' });
-    }
+    const fingerprint = resolveFingerprint(req);
 
     // Step 1: Get or create user counter (Postgres-persisted)
-    const user = await counterDb.getOrCreateCounterUser(customerId, 'bbqe');
+    const user = await counterDb.getOrCreateCounterUser(fingerprint, 'bbqe');
     if (!user) {
       return res.status(500).json({ error: 'Could not retrieve user counter' });
     }
@@ -336,7 +360,7 @@ app.post('/api/bbqe/scan-link', async (req, res) => {
     }
 
     // Step 5: Log usage (in-memory audit, separate from counter)
-    await logUsage(customerId, 'BBQE', 'link_scan');
+    await logUsage(fingerprint, 'BBQE', 'link_scan');
 
     res.json({
       url: url,
@@ -675,18 +699,16 @@ function analyzeWiFiThreat(ssid, security, bssid) {
 
 app.post('/api/bbqe/check-threat', async (req, res) => {
   try {
-    const { customerId, email } = req.body;
+    const { email } = req.body;
 
     if (!email) {
       return res.status(400).json({ error: 'Email required' });
     }
 
-    if (!customerId) {
-      return res.status(400).json({ error: 'customerId required' });
-    }
+    const fingerprint = resolveFingerprint(req);
 
     // Step 1: Get or create user counter (Postgres-persisted)
-    const user = await counterDb.getOrCreateCounterUser(customerId, 'bbqe');
+    const user = await counterDb.getOrCreateCounterUser(fingerprint, 'bbqe');
     if (!user) {
       return res.status(500).json({ error: 'Could not retrieve user counter' });
     }
@@ -714,7 +736,7 @@ app.post('/api/bbqe/check-threat', async (req, res) => {
     }
 
     // Step 5: Log check usage (in-memory audit, separate from counter)
-    await logUsage(customerId, 'BBQE', 'threat_check');
+    await logUsage(fingerprint, 'BBQE', 'threat_check');
 
     res.json({
       isBreach: threatResult.isBreach,
@@ -796,18 +818,16 @@ app.post('/api/bbqe/usage-status', async (req, res) => {
 
 app.post('/api/relish/get-wisdom', async (req, res) => {
   try {
-    const { customerId, situation, context } = req.body;
+    const { situation, context } = req.body;
 
     if (!situation) {
       return res.status(400).json({ error: 'Situation required' });
     }
 
-    if (!customerId) {
-      return res.status(400).json({ error: 'customerId required' });
-    }
+    const fingerprint = resolveFingerprint(req);
 
     // Step 1: Get or create user counter (Postgres-persisted)
-    const user = await counterDb.getOrCreateCounterUser(customerId, 'relish');
+    const user = await counterDb.getOrCreateCounterUser(fingerprint, 'relish');
     if (!user) {
       return res.status(500).json({ error: 'Could not retrieve user counter' });
     }
@@ -835,7 +855,7 @@ app.post('/api/relish/get-wisdom', async (req, res) => {
     }
 
     // Step 5: Log wisdom usage (in-memory audit, separate from counter)
-    await logUsage(customerId, 'RELISH', 'wisdom');
+    await logUsage(fingerprint, 'RELISH', 'wisdom');
 
     res.json({
       wisdom: wisdom,
