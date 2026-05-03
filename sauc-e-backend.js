@@ -27,22 +27,27 @@ app.set('trust proxy', true);
 // ============================================================================
 // SERVER-SIDE FINGERPRINT RESOLVER
 // ============================================================================
-// Composite fingerprint built entirely server-side from request headers.
-// Frontend cannot manipulate. Stable across browser refreshes from same device
-// on same network. Resolves shared-NAT collisions via user-agent + headers.
-// Defeatable only by VPN, network change, or motivated header-spoofing.
+// Builds a stable identifier from the request itself.
+// Uses customerId from the body ONLY if it looks stable (length >= 16).
+// Otherwise falls back to hash(ip + userAgent) which is stable across
+// browser refreshes from the same device.
 // ============================================================================
 
 function resolveFingerprint(req) {
+  const { customerId } = req.body || {};
+
+  // If frontend sends a stable-looking customerId, trust it
+  if (typeof customerId === 'string' && customerId.length >= 16) {
+    return customerId;
+  }
+
+  // Otherwise build a server-side fingerprint from IP + User-Agent
   const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown-ip';
   const ua = req.headers['user-agent'] || 'unknown-ua';
-  const lang = req.headers['accept-language'] || 'unknown-lang';
-  const enc = req.headers['accept-encoding'] || 'unknown-enc';
-
-  const raw = `${ip}::${ua}::${lang}::${enc}`;
+  const raw = `${ip}::${ua}`;
   const hash = crypto.createHash('sha256').update(raw).digest('hex');
 
-  // Prefix to mark it as server-derived (useful for log inspection)
+  // Prefix to mark it as server-derived for debugging
   return `srv_${hash.slice(0, 32)}`;
 }
 
@@ -213,11 +218,8 @@ app.post('/api/catsup/get-lesson', async (req, res) => {
  */
 app.post('/api/catsup/usage-status', async (req, res) => {
   try {
-    const { fingerprint, payment_provider, subscription_id } = req.body;
-
-    if (!fingerprint) {
-      return res.status(400).json({ status: 'error', message: 'fingerprint required' });
-    }
+    const { payment_provider, subscription_id } = req.body;
+    const fingerprint = resolveFingerprint(req);
 
     // Get or create user
     let user = await counterDb.getOrCreateCounterUser(fingerprint, 'catsup');
@@ -753,11 +755,8 @@ app.post('/api/bbqe/check-threat', async (req, res) => {
  */
 app.post('/api/bbqe/usage-status', async (req, res) => {
   try {
-    const { fingerprint, payment_provider, subscription_id } = req.body;
-
-    if (!fingerprint) {
-      return res.status(400).json({ status: 'error', message: 'fingerprint required' });
-    }
+    const { payment_provider, subscription_id } = req.body;
+    const fingerprint = resolveFingerprint(req);
 
     // Get or create user
     let user = await counterDb.getOrCreateCounterUser(fingerprint, 'bbqe');
@@ -871,11 +870,8 @@ app.post('/api/relish/get-wisdom', async (req, res) => {
  */
 app.post('/api/relish/usage-status', async (req, res) => {
   try {
-    const { fingerprint, payment_provider, subscription_id } = req.body;
-
-    if (!fingerprint) {
-      return res.status(400).json({ status: 'error', message: 'fingerprint required' });
-    }
+    const { payment_provider, subscription_id } = req.body;
+    const fingerprint = resolveFingerprint(req);
 
     // Get or create user
     let user = await counterDb.getOrCreateCounterUser(fingerprint, 'relish');
