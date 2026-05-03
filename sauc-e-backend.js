@@ -27,27 +27,22 @@ app.set('trust proxy', true);
 // ============================================================================
 // SERVER-SIDE FINGERPRINT RESOLVER
 // ============================================================================
-// Builds a stable identifier from the request itself.
-// Uses customerId from the body ONLY if it looks stable (length >= 16).
-// Otherwise falls back to hash(ip + userAgent) which is stable across
-// browser refreshes from the same device.
+// Composite fingerprint built entirely server-side from request headers.
+// Frontend cannot manipulate. Stable across browser refreshes from same device
+// on same network. Resolves shared-NAT collisions via user-agent + headers.
+// Defeatable only by VPN, network change, or motivated header-spoofing.
 // ============================================================================
 
 function resolveFingerprint(req) {
-  const { customerId } = req.body || {};
-
-  // If frontend sends a stable-looking customerId, trust it
-  if (typeof customerId === 'string' && customerId.length >= 16) {
-    return customerId;
-  }
-
-  // Otherwise build a server-side fingerprint from IP + User-Agent
   const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown-ip';
   const ua = req.headers['user-agent'] || 'unknown-ua';
-  const raw = `${ip}::${ua}`;
+  const lang = req.headers['accept-language'] || 'unknown-lang';
+  const enc = req.headers['accept-encoding'] || 'unknown-enc';
+
+  const raw = `${ip}::${ua}::${lang}::${enc}`;
   const hash = crypto.createHash('sha256').update(raw).digest('hex');
 
-  // Prefix to mark it as server-derived for debugging
+  // Prefix to mark it as server-derived (useful for log inspection)
   return `srv_${hash.slice(0, 32)}`;
 }
 
