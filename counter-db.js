@@ -23,10 +23,13 @@ async function ensureCounterTables() {
     const client = await pool.connect();
 
     // Counter users table
+    // NOTE: fingerprint is NOT globally unique — it's unique per (fingerprint, app_name)
+    // because the same device fingerprint legitimately appears across all 3 apps
+    // (catsup, relish, bbqe). Each app gets its own counter row per device.
     await client.query(`
       CREATE TABLE IF NOT EXISTS sauce_counter_users (
         id                      SERIAL PRIMARY KEY,
-        fingerprint             TEXT NOT NULL UNIQUE,
+        fingerprint             TEXT NOT NULL,
         app_name                TEXT NOT NULL CHECK (app_name IN ('bbqe', 'catsup', 'relish')),
         demo_started_at         TIMESTAMPTZ DEFAULT now(),
         uses_remaining          INT NOT NULL DEFAULT 9,
@@ -35,8 +38,50 @@ async function ensureCounterTables() {
         subscription_customer_id TEXT,
         paid_at                 TIMESTAMPTZ,
         created_at              TIMESTAMPTZ DEFAULT now(),
-        updated_at              TIMESTAMPTZ DEFAULT now()
+        updated_at              TIMESTAMPTZ DEFAULT now(),
+        UNIQUE (fingerprint, app_name)
       );
+    `);
+
+    // ====================================================================
+    // MIGRATION: drop legacy global-UNIQUE on fingerprint, add composite
+    // UNIQUE on (fingerprint, app_name). Runs idempotently on every start.
+    // Only effective for tables created before the schema was fixed above.
+    // ====================================================================
+
+    // Drop the legacy unique constraint on fingerprint alone, if present.
+    // Postgres auto-names inline UNIQUE constraints as
+    // <table>_<column>_key, so the legacy name is sauce_counter_users_fingerprint_key.
+    await client.query(`
+      DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1 FROM pg_constraint
+          WHERE conname = 'sauce_counter_users_fingerprint_key'
+            AND conrelid = 'sauce_counter_users'::regclass
+        ) THEN
+          ALTER TABLE sauce_counter_users
+            DROP CONSTRAINT sauce_counter_users_fingerprint_key;
+          RAISE NOTICE 'Dropped legacy UNIQUE constraint on fingerprint';
+        END IF;
+      END $$;
+    `);
+
+    // Add the composite unique constraint if missing.
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint
+          WHERE conname = 'sauce_counter_users_fingerprint_app_unique'
+            AND conrelid = 'sauce_counter_users'::regclass
+        ) THEN
+          ALTER TABLE sauce_counter_users
+            ADD CONSTRAINT sauce_counter_users_fingerprint_app_unique
+            UNIQUE (fingerprint, app_name);
+          RAISE NOTICE 'Added composite UNIQUE on (fingerprint, app_name)';
+        END IF;
+      END $$;
     `);
 
     // Counter actions audit log
