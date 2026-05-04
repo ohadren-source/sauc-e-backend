@@ -10,10 +10,44 @@ const axios = require('axios');
 // STRIPE VERIFICATION
 // ============================================================================
 
-async function verifyStripeSubscription(customerId) {
+/**
+ * Given a Stripe checkout session ID, retrieve the subscription ID
+ * (if a subscription was created during checkout)
+ */
+async function getStripeSubscriptionIdFromSession(sessionId) {
+  const stripeApiKey = process.env.STRIPE_API_KEY;
+  if (!stripeApiKey) {
+    console.warn('STRIPE_API_KEY not set');
+    return null;
+  }
+
+  try {
+    const response = await axios.get(
+      `https://api.stripe.com/v1/checkout/sessions/${sessionId}`,
+      {
+        auth: { username: stripeApiKey, password: '' }
+      }
+    );
+
+    const session = response.data;
+    // If payment mode is 'subscription', subscription ID is in session.subscription
+    if (session.payment_status === 'paid' && session.subscription) {
+      console.log(`[Stripe] Session ${sessionId} → Subscription ${session.subscription}`);
+      return session.subscription;
+    }
+
+    console.log(`[Stripe] Session ${sessionId}: no subscription found`);
+    return null;
+  } catch (err) {
+    console.error(`[Stripe] Failed to retrieve subscription from session ${sessionId}:`, err.message);
+    return null;
+  }
+}
+
+async function verifyStripeSubscription(subscriptionId) {
   /**
-   * Query Stripe API for active subscriptions.
-   * Returns true if any active subscription exists.
+   * Query Stripe API for active subscription.
+   * Returns true if subscription is ACTIVE.
    */
   const stripeApiKey = process.env.STRIPE_API_KEY;
   if (!stripeApiKey) {
@@ -23,18 +57,18 @@ async function verifyStripeSubscription(customerId) {
 
   try {
     const response = await axios.get(
-      `https://api.stripe.com/v1/customers/${customerId}/subscriptions`,
+      `https://api.stripe.com/v1/subscriptions/${subscriptionId}`,
       {
-        auth: { username: stripeApiKey, password: '' },
-        params: { status: 'active', limit: 1 }
+        auth: { username: stripeApiKey, password: '' }
       }
     );
 
-    const isActive = response.data.data.length > 0;
-    console.log(`[Stripe] Customer ${customerId}: ${isActive ? 'ACTIVE' : 'INACTIVE'}`);
+    const status = response.data.status;
+    const isActive = status === 'active';
+    console.log(`[Stripe] Subscription ${subscriptionId}: ${status} (${isActive ? 'ACTIVE' : 'INACTIVE'})`);
     return isActive;
   } catch (err) {
-    console.error(`[Stripe] Verification failed for ${customerId}:`, err.message);
+    console.error(`[Stripe] Verification failed for ${subscriptionId}:`, err.message);
     return false;
   }
 }
@@ -125,23 +159,43 @@ async function verifySquareSubscription(subscriptionId) {
 // UNIFIED VERIFICATION
 // ============================================================================
 
-async function verifySubscription(paymentProvider, subscriptionId) {
+async function verifySubscription(paymentProvider, subscriptionOrSessionId) {
   /**
    * Unified interface for all payment providers.
+   *
+   * For Stripe: subscriptionOrSessionId can be either:
+   *   - A subscription ID (sub_xxxxx) - verify directly
+   *   - A checkout session ID (cs_xxxxx) - lookup subscription first, then verify
+   *
+   * For PayPal/Square: subscriptionOrSessionId is the subscription ID
+   *
    * Returns true if subscription is active, false otherwise.
    */
-  if (!paymentProvider || !subscriptionId) {
+  if (!paymentProvider || !subscriptionOrSessionId) {
     return false;
   }
 
   const provider = paymentProvider.toLowerCase();
 
   if (provider === 'stripe') {
+    // Handle both session IDs (cs_xxxxx) and subscription IDs (sub_xxxxx)
+    let subscriptionId = subscriptionOrSessionId;
+
+    if (subscriptionId.startsWith('cs_')) {
+      // This is a checkout session ID - retrieve the subscription ID
+      console.log(`[Stripe] Attempting to extract subscription from session ${subscriptionId}`);
+      subscriptionId = await getStripeSubscriptionIdFromSession(subscriptionId);
+      if (!subscriptionId) {
+        console.warn(`[Stripe] Could not extract subscription ID from session`);
+        return false;
+      }
+    }
+
     return await verifyStripeSubscription(subscriptionId);
   } else if (provider === 'paypal') {
-    return await verifyPayPalSubscription(subscriptionId);
+    return await verifyPayPalSubscription(subscriptionOrSessionId);
   } else if (provider === 'square') {
-    return await verifySquareSubscription(subscriptionId);
+    return await verifySquareSubscription(subscriptionOrSessionId);
   } else {
     console.warn(`Unknown payment provider: ${provider}`);
     return false;
@@ -153,6 +207,7 @@ async function verifySubscription(paymentProvider, subscriptionId) {
 // ============================================================================
 
 module.exports = {
+  getStripeSubscriptionIdFromSession,
   verifyStripeSubscription,
   verifyPayPalSubscription,
   verifySquareSubscription,
