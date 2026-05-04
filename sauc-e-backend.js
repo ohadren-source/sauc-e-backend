@@ -755,7 +755,7 @@ app.post('/api/bbqe/check-threat', async (req, res) => {
  */
 app.post('/api/bbqe/usage-status', async (req, res) => {
   try {
-    const { payment_provider, subscription_id } = req.body;
+    const { payment_provider, subscription_id, session_id } = req.body;
     const fingerprint = resolveFingerprint(req);
 
     // Get or create user
@@ -764,14 +764,20 @@ app.post('/api/bbqe/usage-status', async (req, res) => {
       return res.status(500).json({ status: 'error', message: 'Could not create user' });
     }
 
-    // If subscription data provided, verify it
-    if (payment_provider && subscription_id) {
+    // If payment data provided, verify it.
+    // Accepts subscription_id (sub_xxxxx / PayPal / Square) or session_id (cs_xxxxx
+    // from Stripe hosted payment links). verifySubscription() resolves sessions
+    // to subscriptions automatically before checking active status.
+    if (payment_provider && (subscription_id || session_id)) {
       const isActive = await paymentVerification.verifySubscription(
         payment_provider,
-        subscription_id
+        subscription_id,
+        session_id
       );
       if (isActive && !user.is_paid) {
-        user = await counterDb.markUserPaid(user.id, payment_provider, subscription_id);
+        // Persist whichever ID we have for audit purposes
+        const resolvedId = subscription_id || session_id;
+        user = await counterDb.markUserPaid(user.id, payment_provider, resolvedId);
       }
     }
 
@@ -787,8 +793,6 @@ app.post('/api/bbqe/usage-status', async (req, res) => {
     res.status(500).json({ status: 'error', error: err.message });
   }
 });
-
-// ============================================================================
 // RELISH ENDPOINTS (Wellness/Wisdom)
 // ============================================================================
 
