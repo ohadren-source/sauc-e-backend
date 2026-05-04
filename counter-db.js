@@ -10,9 +10,41 @@
 
 const { Pool } = require('pg');
 
+// ============================================================================
+// SUBSCRIPTION TIER MAPPING
+// ============================================================================
+// Maps subscription IDs from all providers to their tier level
+
+const SUBSCRIPTION_TIER_MAP = {
+  // PayPal Plan IDs
+  'P-45948399FA681270DNHAH43Y': 'bbqe-premium',
+  'P-17886177FN0218458NHAH2JA': 'bbqe-pitboss',
+  'P-58676712YW9357247NG6XZXI': 'relish',
+  'P-7ES60485XB000951VNG77OZY': 'catsup',
+  'P-97U37228YV854831UNG77RBA': 'catsup',
+
+  // Stripe Product IDs (added as they're discovered)
+  // Format: stripe product ID → tier
+
+  // Square Plan IDs (added as they're discovered)
+  // Format: square subscription ID → tier
+};
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL
 });
+
+// ============================================================================
+// TIER LOOKUP
+// ============================================================================
+
+function getSubscriptionTier(subscriptionId) {
+  /**
+   * Look up subscription ID in the tier mapping.
+   * Returns: 'bbqe-premium', 'bbqe-pitboss', 'catsup', 'relish', or null
+   */
+  return SUBSCRIPTION_TIER_MAP[subscriptionId] || null;
+}
 
 // ============================================================================
 // INITIALIZE TABLES
@@ -36,6 +68,7 @@ async function ensureCounterTables() {
         is_paid                 BOOLEAN DEFAULT FALSE,
         payment_provider        TEXT CHECK (payment_provider IN ('stripe', 'paypal', 'square', 'revenuecat')),
         subscription_customer_id TEXT,
+        subscription_tier       TEXT,
         paid_at                 TIMESTAMPTZ,
         created_at              TIMESTAMPTZ DEFAULT now(),
         updated_at              TIMESTAMPTZ DEFAULT now(),
@@ -80,6 +113,22 @@ async function ensureCounterTables() {
             ADD CONSTRAINT sauce_counter_users_fingerprint_app_unique
             UNIQUE (fingerprint, app_name);
           RAISE NOTICE 'Added composite UNIQUE on (fingerprint, app_name)';
+        END IF;
+      END $$;
+    `);
+
+    // Add subscription_tier column if missing (for existing tables)
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = 'sauce_counter_users'
+            AND column_name = 'subscription_tier'
+        ) THEN
+          ALTER TABLE sauce_counter_users
+            ADD COLUMN subscription_tier TEXT;
+          RAISE NOTICE 'Added subscription_tier column';
         END IF;
       END $$;
     `);
@@ -180,13 +229,17 @@ async function markUserPaid(userId, paymentProvider, subscriptionId) {
   try {
     const client = await pool.connect();
 
+    // Determine tier from subscription ID
+    const tier = getSubscriptionTier(subscriptionId) || 'unknown';
+
     const result = await client.query(
       `UPDATE sauce_counter_users
        SET is_paid = TRUE, paid_at = now(), uses_remaining = 999999,
-           payment_provider = $1, subscription_customer_id = $2, updated_at = now()
-       WHERE id = $3
+           payment_provider = $1, subscription_customer_id = $2,
+           subscription_tier = $3, updated_at = now()
+       WHERE id = $4
        RETURNING *`,
-      [paymentProvider, subscriptionId, userId]
+      [paymentProvider, subscriptionId, tier, userId]
     );
 
     client.release();
@@ -245,5 +298,7 @@ module.exports = {
   decrementCounter,
   markUserPaid,
   getCounterUser,
-  updateSubscriptionStatus
+  updateSubscriptionStatus,
+  getSubscriptionTier,
+  SUBSCRIPTION_TIER_MAP
 };

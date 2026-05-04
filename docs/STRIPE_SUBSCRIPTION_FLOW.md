@@ -93,7 +93,7 @@ When the app loads with `?subscribed=true&session_id=...`:
      const response = await fetch(`/api/bbqe/usage-status`, {
        method: 'POST',
        body: JSON.stringify({
-         fingerprint: fpManager.getFingerprint(),
+         customerId: fpManager.getFingerprint(),  // FingerprintManager generates stable device ID
          subscription_id: paymentInfo.subscription_id,  // cs_live_xxx or sub_xxx
          payment_provider: paymentInfo.payment_provider,
        }),
@@ -104,6 +104,13 @@ When the app loads with `?subscribed=true&session_id=...`:
      }
    }
    ```
+
+   **Note on customerId vs fingerprint**:
+   - Frontend sends `customerId`: the device fingerprint from FingerprintManager (stored in localStorage)
+   - Backend's `resolveFingerprint(req)` extracts it as `customerId` from the request body
+   - If customerId is valid (length >= 16), backend uses it
+   - Otherwise, backend generates a server-side fingerprint from IP + User-Agent
+   - This ensures consistency across requests from the same device
 
 ---
 
@@ -296,7 +303,7 @@ async function markUserPaid(userId, paymentProvider, subscriptionId) {
 │      calls verifyPayment(paymentInfo)                           │
 │    ↓                                                             │
 │    POST /api/bbqe/usage-status {                               │
-│      fingerprint: "srv_abc123",                                 │
+│      customerId: "fp_abc123def456...",  ← Device fingerprint   │
 │      subscription_id: "cs_live_xxx",  ← Session ID             │
 │      payment_provider: "stripe"                                 │
 │    }                                                             │
@@ -305,6 +312,9 @@ async function markUserPaid(userId, paymentProvider, subscriptionId) {
 ┌─────────────────────────────────────────────────────────────────┐
 │ 3. BACKEND PAYMENT VERIFICATION                                 │
 │    Receives POST /api/bbqe/usage-status                         │
+│    ↓                                                             │
+│    Extracts customerId from request body using resolveFingerprint()  │
+│    Looks up user by customerId (fingerprint)                    │
 │    ↓                                                             │
 │    Calls verifySubscription("stripe", "cs_live_xxx")           │
 │    ↓                                                             │
@@ -455,5 +465,7 @@ If verification fails:
 **Author**: Claude (Engineer)  
 **Architecture**: Chef (Designer)  
 **Status**: ✅ Production Ready  
-**Deployed**: May 4, 2026 - 22:45 EST  
-**Test**: Push this diff to confirm backend deployment
+**Last Updated**: May 4, 2026 - 22:50 EST  
+**Changes**: Fixed customerId parameter naming in frontend API calls  
+**Frontend**: customerId sent in request body → backend extracts via resolveFingerprint()  
+**Backend**: Stripe session ID converted to subscription ID for verification

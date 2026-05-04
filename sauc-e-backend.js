@@ -243,7 +243,8 @@ app.post('/api/catsup/usage-status', async (req, res) => {
       userId: user.id,
       usageCount: user.is_paid ? 0 : (9 - user.uses_remaining),
       usesRemaining: user.is_paid ? 999999 : user.uses_remaining,
-      isPaid: user.is_paid
+      isPaid: user.is_paid,
+      subscriptionTier: user.subscription_tier || null
     });
   } catch (err) {
     console.error('[CATSUP] usage-status error:', err);
@@ -780,7 +781,8 @@ app.post('/api/bbqe/usage-status', async (req, res) => {
       userId: user.id,
       usageCount: user.is_paid ? 0 : (9 - user.uses_remaining),
       usesRemaining: user.is_paid ? 999999 : user.uses_remaining,
-      isPaid: user.is_paid
+      isPaid: user.is_paid,
+      subscriptionTier: user.subscription_tier || null
     });
   } catch (err) {
     console.error('[BBQE] usage-status error:', err);
@@ -895,7 +897,8 @@ app.post('/api/relish/usage-status', async (req, res) => {
       userId: user.id,
       usageCount: user.is_paid ? 0 : (9 - user.uses_remaining),
       usesRemaining: user.is_paid ? 999999 : user.uses_remaining,
-      isPaid: user.is_paid
+      isPaid: user.is_paid,
+      subscriptionTier: user.subscription_tier || null
     });
   } catch (err) {
     console.error('[RELISH] usage-status error:', err);
