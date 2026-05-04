@@ -15,7 +15,10 @@ const axios = require('axios');
  * (if a subscription was created during checkout)
  */
 async function getStripeSubscriptionIdFromSession(sessionId) {
-  const stripeApiKey = process.env.STRIPE_API_KEY;
+  const stripeApiKey = process.env.NODE_ENV === 'production'
+    ? process.env.STRIPE_LIVE_API_KEY
+    : process.env.STRIPE_API_KEY;
+
   if (!stripeApiKey) {
     console.warn('STRIPE_API_KEY not set');
     return null;
@@ -49,7 +52,10 @@ async function verifyStripeSubscription(subscriptionId) {
    * Query Stripe API for active subscription.
    * Returns true if subscription is ACTIVE.
    */
-  const stripeApiKey = process.env.STRIPE_API_KEY;
+  const stripeApiKey = process.env.NODE_ENV === 'production'
+    ? process.env.STRIPE_LIVE_API_KEY
+    : process.env.STRIPE_API_KEY;
+
   if (!stripeApiKey) {
     console.warn('STRIPE_API_KEY not set');
     return false;

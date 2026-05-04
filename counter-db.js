@@ -23,7 +23,11 @@ const SUBSCRIPTION_TIER_MAP = {
   'P-7ES60485XB000951VNG77OZY': 'catsup',
   'P-97U37228YV854831UNG77RBA': 'catsup',
 
-  // Stripe Product IDs (added as they're discovered)
+  // Stripe Product IDs (Test)
+  'prod_USR6yr2VlSxxuV': 'bbqe-premium',
+  'prod_USRApCvjUIYe8J': 'bbqe-pitboss',
+
+  // Stripe Product IDs (Production - add live IDs here)
   // Format: stripe product ID → tier
 
   // Square Plan IDs (added as they're discovered)
