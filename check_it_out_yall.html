@@ -139,8 +139,25 @@ function updateCheckout() {
   }
 }
 
-// Add event listener to payment method dropdown
+// Pre-select plan based on which app the user came from
 document.addEventListener('DOMContentLoaded', function() {
+  var params = new URLSearchParams(window.location.search);
+  var fromApp = params.get('app');
+  var productSelector = document.getElementById('product-selector');
+
+  // Pre-select based on source app
+  if (fromApp === 'bbqe') {
+    productSelector.value = 'bbqe-premium';
+  } else if (fromApp === 'catsup') {
+    productSelector.value = 'catsup-monthly';
+  } else if (fromApp === 'relish') {
+    productSelector.value = 'relish-monthly';
+  }
+
+  // Trigger update to show selected plan
+  updateCheckout();
+
+  // Add event listener to payment method dropdown
   document.getElementById('payment-method-selector').addEventListener('change', updateCheckout);
 });
 
