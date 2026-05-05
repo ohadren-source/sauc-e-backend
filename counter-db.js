@@ -14,18 +14,20 @@ const { Pool } = require('pg');
 // SUBSCRIPTION TIER MAPPING
 // ============================================================================
 // Maps subscription IDs from all providers to their tier level
+// Tier names MUST match frontend: peak-relish, student-catsup, school-catsup, 
+// premium-blend-bbqe, pitboss-bbqe
 
 const SUBSCRIPTION_TIER_MAP = {
   // PayPal Plan IDs
-  'P-45948399FA681270DNHAH43Y': 'bbqe-premium',
-  'P-17886177FN0218458NHAH2JA': 'bbqe-pitboss',
-  'P-58676712YW9357247NG6XZXI': 'relish',
-  'P-7ES60485XB000951VNG77OZY': 'catsup',
-  'P-97U37228YV854831UNG77RBA': 'catsup',
+  'P-45948399FA681270DNHAH43Y': 'premium-blend-bbqe',
+  'P-17886177FN0218458NHAH2JA': 'pitboss-bbqe',
+  'P-58676712YW9357247NG6XZXI': 'peak-relish',
+  'P-7ES60485XB000951VNG77OZY': 'student-catsup',
+  'P-97U37228YV854831UNG77RBA': 'school-catsup',
 
   // Stripe Product IDs (Test)
-  'prod_USR6yr2VlSxxuV': 'bbqe-premium',
-  'prod_USRApCvjUIYe8J': 'bbqe-pitboss',
+  'prod_USR6yr2VlSxxuV': 'premium-blend-bbqe',
+  'prod_USRApCvjUIYe8J': 'pitboss-bbqe',
 
   // Stripe Product IDs (Production - add live IDs here)
   // Format: stripe product ID → tier
@@ -45,7 +47,8 @@ const pool = new Pool({
 function getSubscriptionTier(subscriptionId) {
   /**
    * Look up subscription ID in the tier mapping.
-   * Returns: 'bbqe-premium', 'bbqe-pitboss', 'catsup', 'relish', or null
+   * Returns: 'peak-relish', 'student-catsup', 'school-catsup', 
+   *          'premium-blend-bbqe', 'pitboss-bbqe', or null
    */
   return SUBSCRIPTION_TIER_MAP[subscriptionId] || null;
 }
