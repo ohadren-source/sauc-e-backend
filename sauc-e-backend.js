@@ -600,7 +600,7 @@ app.post('/api/bbqe/wifi-check', async (req, res) => {
 
     // Step 1: Check subscription (premium only)
     const fingerprint = resolveFingerprint(req);
-    const user = await counterDb.getOrCreateCounterUser(fingerprint, 'BBQE');
+    const user = await counterDb.getOrCreateCounterUser(fingerprint, 'bbqe');
     
     if (!user || !user.is_paid) {
       return res.status(403).json({
