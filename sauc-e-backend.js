@@ -1048,7 +1048,7 @@ async function askClaude(question, topic) {
         messages: [
           {
             role: 'user',
-            content: `You are a Socratic tutor. Answer this question about ${topic || 'general knowledge'} in a way that teaches understanding, not just facts.\n\nQuestion: ${question}\n\nRespond in 2-3 sentences that focus on understanding, not memorization.`
+            content: `You are a Socratic tutor. Answer this question about ${topic || 'general knowledge'} in a way that teaches understanding, not just facts.\n\nQuestion: ${question}\n\nRespond with insight, ask clarifying questions, and guide the learner to discover the answer themselves.`
           }
         ]
       },
@@ -1170,7 +1170,7 @@ async function logUsage(customerId, app, action) {
 app.post('/api/webhooks/stripe', express.raw({type: 'application/json'}), async (req, res) => {
   try {
     // Parse the event from raw body
-    const event = JSON.parse(req.body.toString());
+    const event = JSON.parse(req.body);
     console.log(`[Stripe Webhook] Received event: ${event.type}`);
 
     // Handle checkout.session.completed
