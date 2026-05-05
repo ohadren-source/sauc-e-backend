@@ -75,6 +75,57 @@ app.get('/health', (req, res) => {
 });
 
 // ============================================================================
+// UNIFIED SUBSCRIPTION STATUS ENDPOINT
+// ============================================================================
+
+/**
+ * POST /api/db/get-subscription-status
+ * Direct database lookup for subscription tier
+ * 
+ * Called by: BBQE, CATSUP, RELISH (all 3 apps)
+ * Returns subscription tier for the fingerprinted user
+ * 
+ * Request:
+ * {
+ *   "fingerprint": "srv_abc123...",
+ *   "app_name": "bbqe" | "catsup" | "relish"
+ * }
+ * 
+ * Response:
+ * {
+ *   "subscription_tier": null | "peak-relish" | "student-catsup" | "school-catsup" | "premium-blend-bbqe" | "pitboss-bbqe",
+ *   "is_paid": boolean,
+ *   "uses_remaining": number
+ * }
+ */
+app.post('/api/db/get-subscription-status', async (req, res) => {
+  try {
+    const { fingerprint, app_name } = req.body;
+
+    if (!fingerprint || !app_name) {
+      return res.status(400).json({ error: 'fingerprint and app_name required' });
+    }
+
+    // Get or create user in counter database
+    const user = await counterDb.getOrCreateCounterUser(fingerprint, app_name);
+    
+    if (!user) {
+      return res.status(500).json({ error: 'Could not retrieve user' });
+    }
+
+    res.json({
+      subscription_tier: user.subscription_tier || null,
+      is_paid: user.is_paid || false,
+      uses_remaining: user.uses_remaining || 0
+    });
+
+  } catch (err) {
+    console.error('[DB] get-subscription-status error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================================
 // CATSUP ENDPOINTS (Learning/Questions)
 // ============================================================================
 
@@ -1169,7 +1220,7 @@ async function logUsage(customerId, app, action) {
  */
 app.post('/api/webhooks/stripe', express.raw({type: 'application/json'}), async (req, res) => {
   try {
-    // Parse the event from raw body
+    // Parse the event from raw body (FIXED: removed .toString())
     const event = JSON.parse(req.body);
     console.log(`[Stripe Webhook] Received event: ${event.type}`);
 
@@ -1227,7 +1278,9 @@ counterDb.ensureCounterTables();
 
 app.listen(PORT, () => {
   console.log(`SAUC-E Backend running on port ${PORT}`);
-  console.log(`CATSUP endpoint: POST /api/catsup/ask-question`);
+  console.log(`\nUnified Subscription Status:`);
+  console.log(`  - POST /api/db/get-subscription-status (all apps)`);
+  console.log(`\nCATSUP endpoints: POST /api/catsup/ask-question`);
   console.log(`BBQE endpoints:`);
   console.log(`  - POST /api/bbqe/scan-link (Free: Link Scanner)`);
   console.log(`  - POST /api/bbqe/wifi-check (Premium: WiFi Safety)`);
@@ -1235,9 +1288,6 @@ app.listen(PORT, () => {
   console.log(`  - POST /api/bbqe/usage-status`);
   console.log(`RELISH endpoint: POST /api/relish/get-wisdom`);
   console.log(`Health check: GET /health`);
-  console.log(`\nCounter System:`);
-  console.log(`  - POST /api/{app}/usage-status (fingerprint-based)`);
-  console.log(`  - POST /api/{app}/decrement (after successful action)`);
 });
 
 module.exports = app;
