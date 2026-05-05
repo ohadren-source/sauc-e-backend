@@ -1,6 +1,6 @@
 /**
  * SAUC-E UNIFIED BACKEND
- * Serves CATSUP, BBQE, RELISH (all apps share one backend)
+ * Serves CATSUP (3,6,9), BBQE (3,6,9), RELISH (3,6,9), future sauc-es.
  * 
  * All API keys hardcoded here (hidden from iOS app bundle)
  * iOS apps call endpoints instead of using direct API keys
@@ -72,6 +72,66 @@ const API_KEYS = {
 
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// ============================================================================
+// TEST ENDPOINT (TEMPORARY) - OVERRIDE COUNTER FOR TESTING
+// ============================================================================
+
+/**
+ * POST /api/test/set-counter
+ * TEMPORARY TESTING ENDPOINT - Sets user counter to specified value
+ * 
+ * Request:
+ * {
+ *   "customerId": "srv_abc123...",
+ *   "app_name": "bbqe",
+ *   "uses_remaining": 99
+ * }
+ * 
+ * Response:
+ * {
+ *   "status": "ok",
+ *   "message": "Counter set to 99 for testing",
+ *   "user": { id, uses_remaining, is_paid }
+ * }
+ */
+app.post('/api/test/set-counter', async (req, res) => {
+  try {
+    const { customerId, app_name, uses_remaining } = req.body;
+
+    if (!customerId || !app_name) {
+      return res.status(400).json({ error: 'customerId and app_name required' });
+    }
+
+    const value = uses_remaining || 99;
+
+    // Get or create user
+    let user = await counterDb.getOrCreateCounterUser(customerId, app_name);
+    if (!user) {
+      return res.status(500).json({ error: 'Could not create user' });
+    }
+
+    // Update uses_remaining directly (testing only)
+    const updated = await counterDb.setCounterValue(user.id, app_name, value);
+    
+    if (!updated) {
+      return res.status(500).json({ error: 'Could not update counter' });
+    }
+
+    res.json({
+      status: 'ok',
+      message: `Counter set to ${value} for testing`,
+      user: {
+        id: updated.id,
+        uses_remaining: updated.uses_remaining,
+        is_paid: updated.is_paid
+      }
+    });
+  } catch (err) {
+    console.error('[TEST] set-counter error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ============================================================================
@@ -1100,7 +1160,7 @@ async function askClaude(question, topic) {
         messages: [
           {
             role: 'user',
-            content: `You are a Socratic tutor. Answer this question about ${topic || 'general knowledge'} in a way that teaches understanding, not just facts.\n\nQuestion: ${question}\n\nRespond with clarity and depth.`
+            content: `You are a Socratic tutor. Answer this question about ${topic || 'general knowledge'} in a way that teaches understanding, not just facts.\n\nQuestion: ${question}\n\nRespond with 2-3 sentences max.`
           }
         ]
       },
@@ -1281,6 +1341,8 @@ app.listen(PORT, () => {
   console.log(`SAUC-E Backend running on port ${PORT}`);
   console.log(`\nUnified Subscription Status:`);
   console.log(`  - POST /api/db/get-subscription-status (all apps)`);
+  console.log(`\nTest Endpoint (TEMPORARY):`);
+  console.log(`  - POST /api/test/set-counter (override counter for testing)`);
   console.log(`\nCATSUP endpoints: POST /api/catsup/ask-question`);
   console.log(`BBQE endpoints:`);
   console.log(`  - POST /api/bbqe/scan-link (Free: Link Scanner)`);
