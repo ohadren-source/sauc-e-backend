@@ -599,9 +599,10 @@ app.post('/api/bbqe/wifi-check', async (req, res) => {
     }
 
     // Step 1: Check subscription (premium only)
-    const subscriptionStatus = await checkSubscription(customerId, 'BBQE');
-
-    if (!subscriptionStatus.isSubscribed) {
+    const fingerprint = resolveFingerprint(req);
+    const user = await counterDb.getOrCreateCounterUser(fingerprint, 'BBQE');
+    
+    if (!user || !user.is_paid) {
       return res.status(403).json({
         error: 'WiFi Check requires Premium subscription',
         subscriptionRequired: true
@@ -1099,7 +1100,7 @@ async function askClaude(question, topic) {
         messages: [
           {
             role: 'user',
-            content: `You are a Socratic tutor. Answer this question about ${topic || 'general knowledge'} in a way that teaches understanding, not just facts.\n\nQuestion: ${question}\n\nRespond with insight, ask clarifying questions, and guide the learner to discover the answer themselves.`
+            content: `You are a Socratic tutor. Answer this question about ${topic || 'general knowledge'} in a way that teaches understanding, not just facts.\n\nQuestion: ${question}\n\nRespond with clarity and depth.`
           }
         ]
       },
