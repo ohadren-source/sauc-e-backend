@@ -1177,19 +1177,7 @@ app.post('/api/webhooks/stripe', express.raw({type: 'application/json'}), async 
   }
 
   try {
-    // Verify the webhook signature
-    const event = JSON.parse(
-      crypto
-        .createHmac('sha256', webhookSecret)
-        .update(req.body)
-        .digest('base64')
-    );
-
-    // Actually, we need to construct the signed content differently
-    // Stripe sends: timestamp.payload, signed with HMAC
-    const [timestamp, payload] = signature.split(',')[0].split('=')[1] ? null : signature;
-
-    // Simpler approach: just verify by reconstructing
+    // Extract timestamp and signature from header
     const stripePayload = req.body.toString();
     const parts = signature.split(',');
     let timestampFromHeader = null;
@@ -1206,6 +1194,7 @@ app.post('/api/webhooks/stripe', express.raw({type: 'application/json'}), async 
       return res.status(400).json({ error: 'Invalid signature format' });
     }
 
+    // Verify the signature
     const signedContent = `${timestampFromHeader}.${stripePayload}`;
     const expectedSignature = crypto
       .createHmac('sha256', webhookSecret)
@@ -1238,11 +1227,6 @@ app.post('/api/webhooks/stripe', express.raw({type: 'application/json'}), async 
 
       if (isActive) {
         console.log(`[Stripe Webhook] Subscription ${subscriptionId} verified as active`);
-
-        // Look up any user with this subscription ID and mark them as paid
-        // For now, we just log it - the redirect URL handles the actual marking
-        // This webhook is a safety net in case the redirect fails
-        console.log(`[Stripe Webhook] Ready to mark users with subscription ${subscriptionId} as paid`);
       } else {
         console.warn(`[Stripe Webhook] Subscription ${subscriptionId} verification failed`);
       }
