@@ -146,7 +146,7 @@ async function ensureCounterTables() {
         id              SERIAL PRIMARY KEY,
         user_id         INT NOT NULL,
         app_name        TEXT NOT NULL,
-        action_type     TEXT CHECK (action_type IN ('decrement', 'paid', 'grace_applied')),
+        action_type     TEXT CHECK (action_type IN ('decrement', 'paid', 'grace_applied', 'test_override')),
         uses_before     INT,
         uses_after      INT,
         created_at      TIMESTAMPTZ DEFAULT now()
@@ -232,6 +232,43 @@ async function decrementCounter(userId, appName) {
   }
 }
 
+async function setCounterValue(userId, appName, value) {
+  try {
+    const client = await pool.connect();
+
+    // Get current state
+    let before = await client.query(
+      'SELECT uses_remaining FROM sauce_counter_users WHERE id = $1',
+      [userId]
+    );
+    const usesBefore = before.rows[0]?.uses_remaining || 0;
+
+    // Set to specific value (testing only)
+    let result = await client.query(
+      `UPDATE sauce_counter_users
+       SET uses_remaining = $1, updated_at = now()
+       WHERE id = $2
+       RETURNING *`,
+      [value, userId]
+    );
+
+    const usesAfter = result.rows[0]?.uses_remaining || -1;
+
+    // Log action as test override
+    await client.query(
+      `INSERT INTO sauce_counter_actions (user_id, app_name, action_type, uses_before, uses_after)
+       VALUES ($1, $2, 'test_override', $3, $4)`,
+      [userId, appName, usesBefore, usesAfter]
+    );
+
+    client.release();
+    return result.rows[0];
+  } catch (err) {
+    console.error('setCounterValue error:', err);
+    return null;
+  }
+}
+
 async function markUserPaid(userId, paymentProvider, subscriptionId) {
   try {
     const client = await pool.connect();
@@ -303,6 +340,7 @@ module.exports = {
   ensureCounterTables,
   getOrCreateCounterUser,
   decrementCounter,
+  setCounterValue,
   markUserPaid,
   getCounterUser,
   updateSubscriptionStatus,
