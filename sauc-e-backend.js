@@ -866,6 +866,41 @@ app.post('/api/bbqe/check-threat', async (req, res) => {
  * POST /api/bbqe/usage-status
  * Get or create user counter. Check if subscription is valid.
  */
+// Alias: frontend calls /breach-scan; backend was /check-threat
+app.post('/api/bbqe/breach-scan', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email required' });
+    const fingerprint = resolveFingerprint(req);
+    const user = await counterDb.getOrCreateCounterUser(fingerprint, 'bbqe');
+    if (!user) return res.status(500).json({ error: 'Could not retrieve user counter' });
+    if (!user.is_paid && user.uses_remaining <= 0) {
+      return res.status(403).json({ error: 'Free limit reached', subscriptionRequired: true, checksRemaining: 0 });
+    }
+    const threatResult = await checkRapidAPIThreats(email);
+    let updated = user;
+    if (!user.is_paid) {
+      updated = await counterDb.decrementCounter(user.id, 'bbqe');
+      if (!updated) updated = user;
+    }
+    await logUsage(fingerprint, 'BBQE', 'breach_scan');
+    const breachCount = threatResult.breachCount || 0;
+    res.json({
+      threatLevel: threatResult.isBreach ? (breachCount > 3 ? 'HIGH' : 'MEDIUM') : 'LOW',
+      score: Math.min(breachCount * 15, 100),
+      summary: threatResult.isBreach
+        ? 'Found in ' + breachCount + ' breach database(s). Change your passwords for affected services.'
+        : 'No breaches found for this email address.',
+      flags: threatResult.isBreach ? threatResult.sources.map(s => 'Exposed in: ' + s) : ['No known breaches detected.'],
+      subscriptionRequired: false,
+      checksRemaining: user.is_paid ? 999 : updated.uses_remaining
+    });
+  } catch (error) {
+    console.error('BBQE breach-scan error:', error);
+    res.status(500).json({ error: 'Failed to scan email for breaches' });
+  }
+});
+
 app.post('/api/bbqe/usage-status', async (req, res) => {
   try {
     const { payment_provider, subscription_id } = req.body;
