@@ -1,6 +1,6 @@
 /**
  * SAUC-E UNIFIED BACKEND
- * Serves CATSUP (3,6,9), BBQE (3,6,9), RELISH (3,6,9), future sauc-es.
+ * Serves CATSUP, BBQE, RELISH (all apps share one backend)
  * 
  * All API keys hardcoded here (hidden from iOS app bundle)
  * iOS apps call endpoints instead of using direct API keys
@@ -72,66 +72,6 @@ const API_KEYS = {
 
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
-
-// ============================================================================
-// TEST ENDPOINT (TEMPORARY) - OVERRIDE COUNTER FOR TESTING
-// ============================================================================
-
-/**
- * POST /api/test/set-counter
- * TEMPORARY TESTING ENDPOINT - Sets user counter to specified value
- * 
- * Request:
- * {
- *   "customerId": "srv_abc123...",
- *   "app_name": "bbqe",
- *   "uses_remaining": 99
- * }
- * 
- * Response:
- * {
- *   "status": "ok",
- *   "message": "Counter set to 99 for testing",
- *   "user": { id, uses_remaining, is_paid }
- * }
- */
-app.post('/api/test/set-counter', async (req, res) => {
-  try {
-    const { customerId, app_name, uses_remaining } = req.body;
-
-    if (!customerId || !app_name) {
-      return res.status(400).json({ error: 'customerId and app_name required' });
-    }
-
-    const value = uses_remaining || 99;
-
-    // Get or create user
-    let user = await counterDb.getOrCreateCounterUser(customerId, app_name);
-    if (!user) {
-      return res.status(500).json({ error: 'Could not create user' });
-    }
-
-    // Update uses_remaining directly (testing only)
-    const updated = await counterDb.setCounterValue(user.id, app_name, value);
-    
-    if (!updated) {
-      return res.status(500).json({ error: 'Could not update counter' });
-    }
-
-    res.json({
-      status: 'ok',
-      message: `Counter set to ${value} for testing`,
-      user: {
-        id: updated.id,
-        uses_remaining: updated.uses_remaining,
-        is_paid: updated.is_paid
-      }
-    });
-  } catch (err) {
-    console.error('[TEST] set-counter error:', err);
-    res.status(500).json({ error: err.message });
-  }
 });
 
 // ============================================================================
@@ -627,7 +567,7 @@ function analyzeLinkThreat(rawUrl) {
 
 /**
  * POST /api/bbqe/wifi-check
- * PREMIUM TIER — WiFi Safety Check
+ * FREE TIER (TEMPORARY TESTING) — WiFi Safety Check
  * 
  * Analyzes a WiFi network name (SSID) and optional details for
  * honeypot patterns, impersonation, evil twin risks, and security issues.
@@ -658,22 +598,38 @@ app.post('/api/bbqe/wifi-check', async (req, res) => {
       return res.status(400).json({ error: 'Network name (SSID) required' });
     }
 
-    // Step 1: Check subscription (premium only)
     const fingerprint = resolveFingerprint(req);
+
+    // Step 1: Get or create user counter (Postgres-persisted)
     const user = await counterDb.getOrCreateCounterUser(fingerprint, 'bbqe');
-    
-    if (!user || !user.is_paid) {
+    if (!user) {
+      return res.status(500).json({ error: 'Could not retrieve user counter' });
+    }
+
+    // Step 2: Enforce paywall BEFORE doing the work (FREE TIER FOR TESTING)
+    if (!user.is_paid && user.uses_remaining <= 0) {
       return res.status(403).json({
-        error: 'WiFi Check requires Premium subscription',
-        subscriptionRequired: true
+        error: 'Free limit reached',
+        subscriptionRequired: true,
+        checksRemaining: 0
       });
     }
 
-    // Step 2: Analyze the network
+    // Step 3: Analyze the network
     const result = analyzeWiFiThreat(ssid, security || 'UNKNOWN', bssid || null);
 
-    // Step 3: Log usage
-    await logUsage(customerId, 'BBQE', 'wifi_check');
+    // Step 4: Decrement counter (Postgres-persisted)
+    let updated = user;
+    if (!user.is_paid) {
+      updated = await counterDb.decrementCounter(user.id, 'bbqe');
+      if (!updated) {
+        console.error('[BBQE] decrement failed for user', user.id);
+        updated = user;
+      }
+    }
+
+    // Step 5: Log usage
+    await logUsage(customerId || fingerprint, 'BBQE', 'wifi_check');
 
     res.json({
       ssid: ssid,
@@ -681,7 +637,8 @@ app.post('/api/bbqe/wifi-check', async (req, res) => {
       score: result.score,
       flags: result.flags,
       recommendation: result.recommendation,
-      subscriptionRequired: false
+      subscriptionRequired: false,
+      checksRemaining: user.is_paid ? 999 : updated.uses_remaining
     });
 
   } catch (error) {
@@ -1195,7 +1152,7 @@ async function askClaude(question, topic) {
         messages: [
           {
             role: 'user',
-            content: `You are a Socratic tutor. Answer this question about ${topic || 'general knowledge'} in a way that teaches understanding, not just facts.\n\nQuestion: ${question}\n\nRespond with 2-3 sentences max.`
+            content: `You are a Socratic tutor. Answer this question about ${topic || 'general knowledge'} in a way that teaches understanding, not just facts.\n\nQuestion: ${question}\n\nRespond in 3-5 sentences.`
           }
         ]
       },
@@ -1376,12 +1333,10 @@ app.listen(PORT, () => {
   console.log(`SAUC-E Backend running on port ${PORT}`);
   console.log(`\nUnified Subscription Status:`);
   console.log(`  - POST /api/db/get-subscription-status (all apps)`);
-  console.log(`\nTest Endpoint (TEMPORARY):`);
-  console.log(`  - POST /api/test/set-counter (override counter for testing)`);
   console.log(`\nCATSUP endpoints: POST /api/catsup/ask-question`);
   console.log(`BBQE endpoints:`);
   console.log(`  - POST /api/bbqe/scan-link (Free: Link Scanner)`);
-  console.log(`  - POST /api/bbqe/wifi-check (Premium: WiFi Safety)`);
+  console.log(`  - POST /api/bbqe/wifi-check (Free: WiFi Safety - TEMPORARY)`);
   console.log(`  - POST /api/bbqe/check-threat (PitBoss: Breach Scanner)`);
   console.log(`  - POST /api/bbqe/usage-status`);
   console.log(`RELISH endpoint: POST /api/relish/get-wisdom`);
